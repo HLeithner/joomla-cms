@@ -120,7 +120,7 @@ class Workflow
    */
 	protected function getComponent()
   {
-    if (!is_null($this->component))
+    if (is_null($this->component))
     {
       $parts = explode('.', $this->extension);
 
