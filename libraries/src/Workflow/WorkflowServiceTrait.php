@@ -29,10 +29,10 @@ trait WorkflowServiceTrait
    */
   public static function getConditions(): array
   {
-    if (defined(self::CONSTANT_NAMES)) {
-      return self::CONSTANT_NAMES;
+    if (defined('self::CONDITION_NAMES')) {
+      return self::CONDITION_NAMES;
     } else {
-      return workflow::CONDITION_NAMES;
+      return Workflow::CONDITION_NAMES;
     }
   }
 }

@@ -11,15 +11,13 @@ namespace Joomla\CMS\Form\Field;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Workflow\Workflow;
 
 /**
  * Workflow States field.
  *
  * @since  __DEPLOY_VERSION__
  */
-class WorkflowConditionField extends ListField
+class WorkflowconditionField extends ListField
 {
 	/**
 	 * The form field type.
@@ -27,7 +25,7 @@ class WorkflowConditionField extends ListField
 	 * @var     string
 	 * @since  __DEPLOY_VERSION__
 	 */
-	protected $type = 'WorkflowCondition';
+	protected $type = 'Workflowcondition';
 
 	/**
 	 * The extension where we're
@@ -78,12 +76,42 @@ class WorkflowConditionField extends ListField
    */
   protected function getOptions()
   {
+    $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
     $options = [];
+    $conditions = [];
 
     $component = Factory::getApplication()->bootComponent($this->extension);
     if ($component instanceof WorkflowServiceInterface)
     {
-      $options = $component->getConditions();
+      $conditions = $component->getConditions();
+    }
+
+    foreach ($conditions as $option)
+    {
+      $value = (string) $option['value'];
+      $text  = trim((string) $option) != '' ? trim((string) $option) : $value;
+
+      $disabled = (string) $option['disabled'];
+      $disabled = ($disabled == 'true' || $disabled == 'disabled' || $disabled == '1');
+      $disabled = $disabled || ($this->readonly && $value != $this->value);
+
+      $checked = (string) $option['checked'];
+      $checked = ($checked == 'true' || $checked == 'checked' || $checked == '1');
+
+      $selected = (string) $option['selected'];
+      $selected = ($selected == 'true' || $selected == 'selected' || $selected == '1');
+
+      $tmp = array(
+        'value'    => $value,
+        'text'     => Text::alt($text, $fieldname),
+        'disable'  => $disabled,
+        'class'    => (string) $option['class'],
+        'selected' => ($checked || $selected),
+        'checked'  => ($checked || $selected),
+      );
+
+      // Add the option object to the result set.
+      $options[] = (object) $tmp;
     }
 
 		// Merge any additional options in the XML definition.
