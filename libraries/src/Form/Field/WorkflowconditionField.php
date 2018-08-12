@@ -11,6 +11,8 @@ namespace Joomla\CMS\Form\Field;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Workflow\WorkflowServiceInterface;
 
 /**
  * Workflow States field.
@@ -86,28 +88,18 @@ class WorkflowconditionField extends ListField
       $conditions = $component->getConditions();
     }
 
-    foreach ($conditions as $option)
+    foreach ($conditions as $value=>$option)
     {
-      $value = (string) $option['value'];
       $text  = trim((string) $option) != '' ? trim((string) $option) : $value;
 
-      $disabled = (string) $option['disabled'];
-      $disabled = ($disabled == 'true' || $disabled == 'disabled' || $disabled == '1');
-      $disabled = $disabled || ($this->readonly && $value != $this->value);
-
-      $checked = (string) $option['checked'];
-      $checked = ($checked == 'true' || $checked == 'checked' || $checked == '1');
-
-      $selected = (string) $option['selected'];
-      $selected = ($selected == 'true' || $selected == 'selected' || $selected == '1');
+      $selected = ((int) $this->value === $value);
 
       $tmp = array(
         'value'    => $value,
         'text'     => Text::alt($text, $fieldname),
-        'disable'  => $disabled,
         'class'    => (string) $option['class'],
-        'selected' => ($checked || $selected),
-        'checked'  => ($checked || $selected),
+        'selected' => $selected,
+        'checked'  => $selected,
       );
 
       // Add the option object to the result set.

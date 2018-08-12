@@ -29,10 +29,8 @@
 				type="workflowcondition"
 				label="COM_WORKFLOW_CONDITION"
 				description="COM_WORKFLOW_CONDITION_DESC"
-				onchange="this.form.submit();"
-		>
-			<option value="">COM_WORKFLOW_SELECT_CONDITION</option>
-		</field>
+				class="input-xxlarge input-large-text"
+		/>
 	</fieldset>
 
 	<fieldset name="params" label="COM_WORKFLOW_PARAMS_LABEL">
