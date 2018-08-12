@@ -26,9 +26,10 @@
 				onchange="this.form.submit();"
 		>
 			<option value="">COM_CONTENT_SELECT_CONDITION</option>
-			<option value="-2">COM_CONTENT_TRASHED</option>
-			<option value="0">COM_CONTENT_UNPUBLISHED</option>
-			<option value="1">COM_CONTENT_PUBLISHED</option>
+			<option value="-2">JTRASHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="1">JPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
 		</field>
 
 		<field
