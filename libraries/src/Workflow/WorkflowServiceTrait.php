@@ -8,8 +8,6 @@
 
 namespace Joomla\CMS\Workflow;
 
-use Joomla\Utilities\ArrayHelper;
-
 defined('JPATH_PLATFORM') or die;
 
 /**
@@ -19,20 +17,15 @@ defined('JPATH_PLATFORM') or die;
  */
 trait WorkflowServiceTrait
 {
-
-  /**
-   * Returns an array of possible conditions for the component.
-   *
-   * @return  array
-   *
-   * @since   __DEPLOY_VERSION__
-   */
-  public static function getConditions(): array
-  {
-    if (defined('self::CONDITION_NAMES')) {
-      return self::CONDITION_NAMES;
-    } else {
-      return Workflow::CONDITION_NAMES;
-    }
-  }
+	/**
+	 * Returns an array of possible conditions for the component.
+	 *
+	 * @return  array
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public static function getConditions(): array
+	{
+		return defined('self::CONDITION_NAMES') ? self::CONDITION_NAMES : Workflow::CONDITION_NAMES;
+	}
 }
