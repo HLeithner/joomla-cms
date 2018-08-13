@@ -20,13 +20,12 @@ use Joomla\Utilities\ArrayHelper;
  */
 class Workflow
 {
-
-  /**
-   * The booted component
-   *
-   * @var \Joomla\CMS\Extension\ComponentInterface
-   */
-  protected $component = null;
+	/**
+	 * The booted component
+	 *
+	 * @var \Joomla\CMS\Extension\ComponentInterface
+	 */
+	protected $component = null;
 
 	/**
 	 * Name of the extension the workflow belong to
@@ -38,17 +37,18 @@ class Workflow
 
 	protected $options = [];
 
-  protected $db;
+	protected $db;
 
-  /**
-   * Condition to names mapping
-   *
-   * @since  __DEPLOY_VERSION__
-   */
-  const CONDITION_NAMES = [
+	/**
+	 * Condition to names mapping
+	 *
+	 * @since  __DEPLOY_VERSION__
+	 */
+	const CONDITION_NAMES = [
 		self::CONDITION_PUBLISHED   => 'JPUBLISHED',
 		self::CONDITION_UNPUBLISHED => 'JUNPUBLISHED',
 		self::CONDITION_TRASHED     => 'JTRASHED',
+		self::CONDITION_ARCHIVED    => 'JARCHIVED',
 	];
 
 	/**
@@ -65,6 +65,11 @@ class Workflow
 	 * Every item with a state which has the condition TRASHED is trashed
 	 */
 	const CONDITION_TRASHED = -2;
+
+	/**
+	 * Every item with a state which has the condition ARCHIVED is archived
+	 */
+	const CONDITION_ARCHIVED = 2;
 
 	/**
 	 * Class constructor

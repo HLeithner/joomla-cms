@@ -63,7 +63,7 @@ class WorkflowconditionField extends ListField
 			else
 			{
 			  $this->extension = Factory::getApplication()->input->getCmd('extension');
-      }
+			}
 		}
 
 		return $success;
@@ -78,33 +78,33 @@ class WorkflowconditionField extends ListField
    */
   protected function getOptions()
   {
-    $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
-    $options = [];
-    $conditions = [];
+	$fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
+	$options = [];
+	$conditions = [];
 
-    $component = Factory::getApplication()->bootComponent($this->extension);
-    if ($component instanceof WorkflowServiceInterface)
-    {
-      $conditions = $component->getConditions();
-    }
+	$component = Factory::getApplication()->bootComponent($this->extension);
 
-    foreach ($conditions as $value=>$option)
-    {
-      $text  = trim((string) $option) != '' ? trim((string) $option) : $value;
+	if ($component instanceof WorkflowServiceInterface)
+	{
+		$conditions = $component->getConditions();
+	}
 
-      $selected = ((int) $this->value === $value);
+	foreach ($conditions as $value => $option)
+	{
+		$text  = trim((string) $option) != '' ? trim((string) $option) : $value;
 
-      $tmp = array(
-        'value'    => $value,
-        'text'     => Text::alt($text, $fieldname),
-        'class'    => (string) $option['class'],
-        'selected' => $selected,
-        'checked'  => $selected,
-      );
+		$selected = ((int) $this->value === $value);
 
-      // Add the option object to the result set.
-      $options[] = (object) $tmp;
-    }
+		$tmp = array(
+			'value'    => $value,
+			'text'     => Text::alt($text, $fieldname),
+			'selected' => $selected,
+			'checked'  => $selected,
+		);
+
+		// Add the option object to the result set.
+		$options[] = (object) $tmp;
+	}
 
 		// Merge any additional options in the XML definition.
 		return array_merge(parent::getOptions(), $options);

@@ -21,7 +21,6 @@ use Joomla\CMS\Extension\MVCComponent;
 use Joomla\CMS\Fields\FieldsServiceInterface;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\HTML\HTMLRegistryAwareTrait;
-use Joomla\CMS\MVC\Factory\MVCFactoryServiceTrait;
 use Joomla\CMS\MVC\Factory\MVCFactoryServiceInterface;
 use Joomla\CMS\Workflow\WorkflowServiceInterface;
 use Joomla\CMS\Workflow\WorkflowServiceTrait;
@@ -52,40 +51,39 @@ class ContentComponent extends MVCComponent implements
    * @since   __DEPLOY_VERSION__
 	 */
 	const CONDITION_NAMES = [
-    self::CONDITION_ARCHIVED   => 'JARCHIVED',
-    self::CONDITION_PUBLISHED   => 'JPUBLISHED',
-    self::CONDITION_UNPUBLISHED => 'JUNPUBLISHED',
-    self::CONDITION_TRASHED     => 'JTRASHED',
-  ];
+		self::CONDITION_PUBLISHED   => 'JPUBLISHED',
+		self::CONDITION_UNPUBLISHED => 'JUNPUBLISHED',
+		self::CONDITION_ARCHIVED    => 'JARCHIVED',
+		self::CONDITION_TRASHED     => 'JTRASHED',
+	];
 
-  /**
-   * The archived condition
-   *
-   * @since   __DEPLOY_VERSION__
-   */
-  const CONDITION_ARCHIVED = 2;
+	/**
+	 * The archived condition
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	const CONDITION_ARCHIVED = 2;
 
-  /**
-   * The published condition
-   *
-   * @since   __DEPLOY_VERSION__
-   */
-	const CONDITION_PUBLISHED = 1;
+	/**
+	 * The published condition
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	  const CONDITION_PUBLISHED = 1;
 
-  /**
-   * The unpublished condition
-   *
-   * @since   __DEPLOY_VERSION__
-   */
-  const CONDITION_UNPUBLISHED = 0;
+	/**
+	 * The unpublished condition
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	const CONDITION_UNPUBLISHED = 0;
 
-  /**
-   * The trashed condition
-   *
-   * @since   __DEPLOY_VERSION__
-   */
-  const CONDITION_TRASHED = -2;
-
+	/**
+	 * The trashed condition
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	const CONDITION_TRASHED = -2;
 
   /**
 	 * Booting the extension. This is the function to set up the environment of the extension like
