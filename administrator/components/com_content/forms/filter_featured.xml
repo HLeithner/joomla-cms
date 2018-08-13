@@ -21,15 +21,12 @@
 
 		<field
 				name="condition"
-				type="list"
+				type="workflowcondition"
 				label="COM_CONTENT_STATES"
 				onchange="this.form.submit();"
+				extension="com_content"
 		>
-			<option value="">COM_CONTENT_SELECT_CONDITION</option>
-			<option value="-2">JTRASHED</option>
-			<option value="0">JUNPUBLISHED</option>
-			<option value="1">JPUBLISHED</option>
-			<option value="2">JARCHIVED</option>
+			<option value="">COM_WORKFLOW_SELECT_CONDITION</option>
 		</field>
 
 		<field
