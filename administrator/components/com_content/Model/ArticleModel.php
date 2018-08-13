@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Categories\Categories;
 use Joomla\CMS\Model\Form;
+use Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use Joomla\Component\Content\Administrator\Helper\ContentHelper;
 use Joomla\Component\Workflow\Administrator\Helper\WorkflowHelper;
 use Joomla\Component\Workflow\Administrator\Table\StateTable;
@@ -364,7 +365,7 @@ class ArticleModel extends AdminModel
 
 			$assoc = $workflow->getAssociation($record->id);
 
-			if (!$state->load($assoc->state_id) || $state->condition != Workflow::TRASHED)
+			if (!$state->load($assoc->state_id) || $state->condition != ContentComponent::CONDITION_TRASHED)
 			{
 				return false;
 			}
