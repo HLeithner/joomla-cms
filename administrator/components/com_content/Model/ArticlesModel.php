@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Associations;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Workflow\Workflow;
+use Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -330,17 +331,14 @@ class ArticlesModel extends ListModel
 
 		if (is_numeric($condition))
 		{
-			switch ((int) $condition)
-			{
-				case Workflow::PUBLISHED:
-				case Workflow::UNPUBLISHED:
-				case Workflow::TRASHED:
-					$query->where($db->quoteName('ws.condition') . ' = ' . $query->quote($condition));
-			}
-		}
+      $query->where($db->quoteName('ws.condition') . ' = ' . (int) $condition);
+    }
 		elseif (!is_numeric($workflowState))
 		{
-			$query->where($db->quoteName('ws.condition') . ' IN (' . $query->quote(Workflow::PUBLISHED) . ',' . $query->quote(Workflow::UNPUBLISHED) . ')');
+			$query->where($db->quoteName('ws.condition') . ' IN (' .
+        (int) ContentComponent::CONDITION_PUBLISHED . ',' .
+        (int) ContentComponent::CONDITION_UNPUBLISHED . ',' .
+        (int) ContentComponent::CONDITION_ARCHIVED . ')');
 		}
 
 		$query->where($db->quoteName('wa.extension') . '=' . $db->quote('com_content'));
