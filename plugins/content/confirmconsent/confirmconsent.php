@@ -15,7 +15,7 @@ use Joomla\CMS\Language\Associations;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
+use Joomla\Database\ParameterType;
 
 /**
  * The Joomla Core confirm consent plugin
@@ -120,11 +120,15 @@ class PlgContentConfirmConsent extends CMSPlugin
 	 */
 	private function getAssignedArticleUrl($articleId, $consentboxLabel)
 	{
+		$articleId = (int) $articleId;
+
 		// Get the info from the article
 		$query = $this->db->getQuery(true)
-			->select($this->db->quoteName(array('id', 'catid', 'language')))
+			->select($this->db->quoteName(['id', 'catid', 'language']))
 			->from($this->db->quoteName('#__content'))
-			->where($this->db->quoteName('id') . ' = ' . (int) $articleId);
+			->where($this->db->quoteName('id') . ' = :id')
+			->bind(':id', $articleId, ParameterType::INTEGER);
+
 		$this->db->setQuery($query);
 
 		$attribs          = array();
