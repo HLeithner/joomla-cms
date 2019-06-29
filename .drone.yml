@@ -130,7 +130,7 @@ steps:
       PLUGIN_EXCLUDE: ^\.git/$
     commands:
       - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST_$DRONE_BUILD_NUMBER/system-tests
-      - echo http://ci.joomla.org:81$PLUGIN_DEST_DIR
+      - echo https://ci.joomla.org:444$PLUGIN_DEST_DIR
       - /bin/upload.sh
     when:
       status:
@@ -194,6 +194,6 @@ services:
 
 ---
 kind: signature
-hmac: 803ba24188ffb88f550cbe48ea65b77548c84bf5bd70f786ac065d85dc2cc454
+hmac: 3883eb68e532174b147f2fb36df1d9a1a86fb1fc965c2373c325d39ce4c61cb1
 
 ...
