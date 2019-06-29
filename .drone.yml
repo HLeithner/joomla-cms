@@ -111,7 +111,7 @@ steps:
 
   - name: artifacts-system-mysql
     image: cschlosser/drone-ftps
-    depends_on: [ system-tests-postgres ]
+    depends_on: [ system-tests-mysql ]
     environment:
       FTP_USERNAME:
         from_secret: ftpusername
