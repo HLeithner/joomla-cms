@@ -109,36 +109,7 @@ steps:
     commands:
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" mysql
 
-  - name: artifacts
-    image: cschlosser/drone-ftps
-    depends_on: [ system-tests-mysql ]
-    environment:
-      FTP_USERNAME:
-        from_secret: ftpusername
-      FTP_PASSWORD:
-        from_secret: ftppassword
-      PLUGIN_HOSTNAME: ci.joomla.org:21
-      PLUGIN_SRC_DIR: /tests/Codeception/_output/
-      PLUGIN_DEST_DIR: /artifacts/$DRONE_BUILD_NUMBER
-      PLUGIN_SECURE: false
-      PLUGIN_VERIFY: false
-      PLUGIN_EXCLUDE: ^\.git/$
-    when:
-      status:
-      - success
-      - failure
-  
-  - name: system-tests-postgres
-    depends_on: [ system-tests-mysql ]
-    image: joomlaprojects/docker-systemtests:latest
-    commands:
-      - bash tests/Codeception/drone-system-run.sh "$(pwd)" postgres
-    when:
-      status:
-      - success
-      - failure
-      
-  - name: artifacts2
+  - name: artifacts-system-mysql
     image: cschlosser/drone-ftps
     depends_on: [ system-tests-postgres ]
     environment:
@@ -150,10 +121,37 @@ steps:
       PLUGIN_SRC_DIR: /tests/Codeception/_output/
       PLUGIN_DEST_DIR: /artifacts
       PLUGIN_SECURE: false
-      PLUGIN_VERIFY: false
       PLUGIN_EXCLUDE: ^\.git/$
     commands:
-      - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_BUILD_NUMBER
+      - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST_$DRONE_BUILD_NUMBER/system-tests-mysql
+      - echo http://ci.joomla.org:81$PLUGIN_DEST_DIR
+      - /bin/upload.sh
+    when:
+      status:
+      - failure
+
+  - name: system-tests-postgres
+    depends_on: [ system-tests-mysql ]
+    image: joomlaprojects/docker-systemtests:latest
+    commands:
+      - bash tests/Codeception/drone-system-run.sh "$(pwd)" postgres
+      
+  - name: artifacts-system-postgres
+    image: cschlosser/drone-ftps
+    depends_on: [ system-tests-postgres ]
+    environment:
+      FTP_USERNAME:
+        from_secret: ftpusername
+      FTP_PASSWORD:
+        from_secret: ftppassword
+      PLUGIN_HOSTNAME: ci.joomla.org:21
+      PLUGIN_SRC_DIR: /tests/Codeception/_output/
+      PLUGIN_DEST_DIR: /artifacts
+      PLUGIN_SECURE: false
+      PLUGIN_EXCLUDE: ^\.git/$
+    commands:
+      - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST_$DRONE_BUILD_NUMBER/system-tests-postgres
+      - echo http://ci.joomla.org:81$PLUGIN_DEST_DIR
       - /bin/upload.sh
     when:
       status:
