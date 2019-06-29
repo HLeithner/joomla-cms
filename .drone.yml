@@ -137,6 +137,18 @@ steps:
         from_secret: RIPS_USERNAME
       RIPS_PASSWORD:
         from_secret: RIPS_PASSWORD
+  - name: artifacts
+    image: cschlosser/drone-ftps
+    environment:
+      FTP_USERNAME:
+        from_secret: ftpusername
+      FTP_PASSWORD:
+        from_secret: ftppassword
+      PLUGIN_HOSTNAME: ci.joomla.org:21
+      PLUGIN_DEST_DIR: /artifacts
+      PLUGIN_SECURE: false
+      PLUGIN_VERIFY: false
+      PLUGIN_EXCLUDE: ^\.git/$
 
 branches:
   exclude: [ l10n_* ]
