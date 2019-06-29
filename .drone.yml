@@ -140,7 +140,7 @@ steps:
       
   - name: artifacts2
     image: cschlosser/drone-ftps
-    depends_on: [ system-tests-mysql ]
+    depends_on: [ system-tests-postgres ]
     environment:
       FTP_USERNAME:
         from_secret: ftpusername
@@ -148,10 +148,13 @@ steps:
         from_secret: ftppassword
       PLUGIN_HOSTNAME: ci.joomla.org:21
       PLUGIN_SRC_DIR: /tests/Codeception/_output/
-      PLUGIN_DEST_DIR: /artifacts/$DRONE_BUILD_NUMBER
+      PLUGIN_DEST_DIR: /artifacts
       PLUGIN_SECURE: false
       PLUGIN_VERIFY: false
       PLUGIN_EXCLUDE: ^\.git/$
+    commands:
+      - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_BUILD_NUMBER
+      - /bin/upload.sh
     when:
       status:
       - failure
@@ -178,7 +181,7 @@ steps:
         from_secret: RIPS_USERNAME
       RIPS_PASSWORD:
         from_secret: RIPS_PASSWORD
-    
+
 branches:
   exclude: [ l10n_* ]
 
