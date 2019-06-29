@@ -39,7 +39,7 @@ class MenuCest
 		$I->click('#menu-collapse-icon');
 
 		$I->clickToolbarButton('new');
-		$I->waitForText(MenuFormPage::$pageTitleText);
+		$I->waitForText('BAD TEST FOR ARTIFACT UPLOAD' . MenuFormPage::$pageTitleText);
 		$I->checkForPhpNoticesOrWarnings();
 
 		$this->fillMenuInformation($I, 'Test Menu');
