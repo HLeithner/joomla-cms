@@ -24,7 +24,8 @@ ini_set('precision', 14);
  * if you chose to create a custom version of that file.
  */
 $rootDirectory = getcwd();
-
+var_dump($_ENV);
+die();
 if (!defined('JPATH_BASE'))
 {
 	define('JPATH_BASE', $rootDirectory);
