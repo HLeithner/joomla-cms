@@ -118,7 +118,7 @@ steps:
       FTP_PASSWORD:
         from_secret: ftppassword
       PLUGIN_HOSTNAME: ci.joomla.org:21
-      PLUGIN_SRC_DIR: /drone/src/tests/Codeception/_output/
+      PLUGIN_SRC_DIR: tests/Codeception/_output/
       PLUGIN_DEST_DIR: /artifacts/$DRONE_BUILD_NUMBER
       PLUGIN_SECURE: false
       PLUGIN_VERIFY: false
@@ -133,6 +133,28 @@ steps:
     image: joomlaprojects/docker-systemtests:latest
     commands:
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" postgres
+    when:
+      status:
+      - success
+      - failure
+      
+  - name: artifacts2
+    image: cschlosser/drone-ftps
+    depends_on: [ system-tests-mysql ]
+    environment:
+      FTP_USERNAME:
+        from_secret: ftpusername
+      FTP_PASSWORD:
+        from_secret: ftppassword
+      PLUGIN_HOSTNAME: ci.joomla.org:21
+      PLUGIN_SRC_DIR: tests/Codeception/_output/
+      PLUGIN_DEST_DIR: /artifacts/$DRONE_BUILD_NUMBER
+      PLUGIN_SECURE: false
+      PLUGIN_VERIFY: false
+      PLUGIN_EXCLUDE: ^\.git/$
+    when:
+      status:
+      - failure
 
   - name: api-tests
     depends_on: [ system-tests-postgres ]
