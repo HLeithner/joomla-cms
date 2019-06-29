@@ -151,8 +151,8 @@ steps:
       PLUGIN_VERIFY: false
       PLUGIN_EXCLUDE: ^\.git/$
     when:
-      event:
-      - push
+      status:
+      - failure
     
 branches:
   exclude: [ l10n_* ]
