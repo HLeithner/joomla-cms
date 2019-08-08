@@ -318,7 +318,16 @@ abstract class PluginHelper
 			return static::$plugins;
 		}
 
-		$levels = implode(',', \JFactory::getUser()->getAuthorisedViewLevels());
+		$user = \JFactory::getUser();
+
+		if ($user->guest === 1)
+		{
+			$levels = '1';
+		}
+		else
+		{
+			$levels = implode(',', $user->getAuthorisedViewLevels());
+		}
 
 		/** @var \JCacheControllerCallback $cache */
 		$cache = \JFactory::getCache('com_plugins', 'callback');
