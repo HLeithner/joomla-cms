@@ -97,8 +97,8 @@ module.exports.compileFile = (file) => {
         if (stats.isDirectory()) {
           const es6SubFiles = Fs.readdirSync(es6Subdir);
           es6SubFiles.sort();
-          es6SubFiles.forEach((file, index) => {
-            es6File += Fs.readFileSync(es6Subdir + '/' + file, 'utf8');
+          es6SubFiles.forEach((subFile) => {
+            es6File += Fs.readFileSync(`${es6Subdir}/${subFile}`, 'utf8');
           });
         }
       }
