@@ -320,6 +320,7 @@ abstract class PluginHelper
 
 		$user = \JFactory::getUser();
 
+		// Don't ask for authorised views if we are a guest
 		if ($user->guest === 1)
 		{
 			$levels = '1';
