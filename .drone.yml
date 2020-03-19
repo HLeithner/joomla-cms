@@ -4,21 +4,8 @@ name: default
 clone:
 
 steps:
-  - name: composer
-    image: joomlaprojects/docker-images:php7.3-composer
-    commands:
-      - composer validate --no-check-all --strict
-      - composer install --no-progress --no-suggest
-
-  - name: npm
-    image: node:current-alpine
-    depends_on: [ composer ]
-    commands:
-      - npm ci --unsafe-perm
-
   - name: packager
     image: itronic/test:latest
-    depends_on: [ npm ]
     environment:
       FTP_USERNAME:
         from_secret: ftpusername
@@ -29,8 +16,10 @@ steps:
       FTP_DEST_DIR: /artifacts
       FTP_VERIFY: "false"
       FTP_SECURE: "true"
-      BRANCH_NAME: "4.0-dev" # Current branch to check against (from repo joomla/joomla-cms)
+      HTTP_ROOT: "https://ci.joomla.org:444"
       DRONE_PULL_REQUEST: DRONE_PULL_REQUEST
+      GITHUB_TOKEN:
+        from_secret: github_token
     commands:
       - export PULL_ID=$DRONE_PULL_REQUEST
       - ls -l
