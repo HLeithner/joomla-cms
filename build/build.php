@@ -539,21 +539,36 @@ system('rm images/powered_by.png');
 if (!$excludeBzip2)
 {
 	$packageName = 'Joomla_' . $fullVersion . '-' . $packageStability . '-Update_Package.tar.bz2';
+	echo "Building " . $packageName . "... ";
 	system('tar --create --bzip2 --file ../packages/' . $packageName . ' * > /dev/null');
+	echo "done.\n";
 	$checksums[$packageName] = array();
 }
 
 if (!$excludeGzip)
 {
 	$packageName = 'Joomla_' . $fullVersion . '-' . $packageStability . '-Update_Package.tar.gz';
+	echo "Building " . $packageName . "... ";
 	system('tar --create --gzip --file ../packages/' . $packageName . ' * > /dev/null');
+	echo "done.\n";
 	$checksums[$packageName] = array();
 }
 
 if (!$excludeZip)
 {
 	$packageName = 'Joomla_' . $fullVersion . '-' . $packageStability . '-Update_Package.zip';
+	echo "Building " . $packageName . "... ";
 	system('zip -r ../packages/' . $packageName . ' * > /dev/null');
+	echo "done.\n";
+	$checksums[$packageName] = array();
+}
+
+if (!$excludeZstd)
+{
+	$packageName = 'Joomla_' . $fullVersion . '-' . $packageStability . '-Update_Package.tar.zst';
+	echo "Building " . $packageName . "... ";
+	system('tar --create --use-compress-program=zstd --file ../packages/' . $packageName . ' * > /dev/null');
+	echo "done.\n";
 	$checksums[$packageName] = array();
 }
 
