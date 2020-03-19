@@ -16,7 +16,7 @@ steps:
       FTP_DEST_DIR: /artifacts
       FTP_VERIFY: "false"
       FTP_SECURE: "true"
-      HTTP_ROOT: "https://ci.joomla.org:444"
+      HTTP_ROOT: "https://ci.joomla.org:444/artifacts"
       DRONE_PULL_REQUEST: DRONE_PULL_REQUEST
       DRONE_COMMIT: DRONE_COMMIT
       GITHUB_TOKEN:
@@ -26,7 +26,7 @@ steps:
       - echo $DRONE_COMMIT
       - export DRONE_COMMIT=$DRONE_COMMIT
       - echo $DRONE_COMMIT
-      - /bin/compare.sh
+      - /bin/drone_build.sh
     volumes:
       - name: reference
         path: /reference
