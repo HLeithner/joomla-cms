@@ -6,14 +6,13 @@ clone:
 steps:
   - name: composer
     image: joomlaprojects/docker-images:php7.3-composer
-    depends_on: [ restore-cache ]
     commands:
       - composer validate --no-check-all --strict
       - composer install --no-progress --no-suggest
 
   - name: npm
     image: node:current-alpine
-    depends_on: [ phpcs ]
+    depends_on: [ composer ]
     commands:
       - npm ci --unsafe-perm
 
