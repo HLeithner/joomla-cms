@@ -18,11 +18,14 @@ steps:
       FTP_SECURE: "true"
       HTTP_ROOT: "https://ci.joomla.org:444"
       DRONE_PULL_REQUEST: DRONE_PULL_REQUEST
+      DRONE_COMMIT: DRONE_COMMIT
       GITHUB_TOKEN:
         from_secret: github_token
     commands:
       - export PULL_ID=$DRONE_PULL_REQUEST
-      - ls -l
+      - echo $DRONE_COMMIT
+      - export DRONE_COMMIT=$DRONE_COMMIT
+      - echo $DRONE_COMMIT
       - /bin/compare.sh
     volumes:
       - name: reference
