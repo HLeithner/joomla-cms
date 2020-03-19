@@ -1,11 +1,9 @@
----
 kind: pipeline
 name: default
 
 clone:
 
 steps:
-
   - name: composer
     image: joomlaprojects/docker-images:php7.3-composer
     depends_on: [ restore-cache ]
@@ -44,9 +42,3 @@ steps:
     when:
       branch:
       - 4.0-dev
-
----
-kind: signature
-hmac: 7649a6f9d7d15da3d8723dd7cf2d8328edc5040fb53308e10c6f07b901f87b22
-
-...
