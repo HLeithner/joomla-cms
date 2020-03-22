@@ -23,9 +23,8 @@ steps:
         from_secret: github_token
     commands:
       - export PULL_ID=$DRONE_PULL_REQUEST
-      - echo $DRONE_COMMIT
-      - export DRONE_COMMIT=$DRONE_COMMIT
-      - echo $DRONE_COMMIT
+      - git config --global user.email "ci@ci.joomla.org"
+      - git config --global user.name "Drone"
       - /bin/drone_build.sh
     volumes:
       - name: reference
