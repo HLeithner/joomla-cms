@@ -23,6 +23,7 @@ use Joomla\CMS\Toolbar\Button\LinkButton;
 use Joomla\CMS\Toolbar\Button\PopupButton;
 use Joomla\CMS\Toolbar\Button\SeparatorButton;
 use Joomla\CMS\Toolbar\Button\StandardButton;
+use Joomla\CMS\Toolbar\Button\TransitionButton;
 
 /**
  * ToolBar handler
@@ -36,6 +37,7 @@ use Joomla\CMS\Toolbar\Button\StandardButton;
  * @method  ConfirmButton  confirmButton(string $name = '', string $text = '', string $task = '')
  * @method  BasicButton  basicButton(string $name = '', string $text = '', string $task = '')
  * @method  DropdownButton  dropdownButton(string $name = '', string $text = '', string $task = '')
+ * @method  TransitionButton  transitionButton(string $name = '', string $text = '', string $task = '')
  *
  * @since  1.5
  */

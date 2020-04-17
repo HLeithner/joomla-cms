@@ -9,8 +9,9 @@
 
 namespace Joomla\Component\Content\Administrator\View\Articles;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
@@ -116,7 +117,7 @@ class HtmlView extends BaseHtmlView
 				$this->filterForm->setFieldAttribute('category_id', 'language', '*,' . $forcedLanguage, 'filter');
 			}
 		}
-		
+
 		/*
 		@TODO Move to the plugin
 
@@ -153,8 +154,6 @@ class HtmlView extends BaseHtmlView
 		}
 
 		$this->document->addScriptOptions('articles.transitions', $transitions);
-		
-		*/
 
 		*/
 
@@ -197,62 +196,68 @@ class HtmlView extends BaseHtmlView
 			$toolbar->addNew('article.add');
 		}
 
-		if ($canDo->get('core.edit.state') || $canDo->get('core.execute.transition'))
-		{
-			$dropdown = $toolbar->dropdownButton('status-group')
-				->text('JTOOLBAR_CHANGE_STATUS')
-				->toggleSplit(false)
-				->icon('fas fa-ellipsis-h')
-				->buttonClass('btn btn-action')
-				->listCheck(true);
-
-			$childBar = $dropdown->getChildToolbar();
-
+		if (ComponentHelper::getParams('com_content')->get('workflows_enable')) {
 			if ($canDo->get('core.execute.transition'))
 			{
+				$dropdown = $toolbar->transitionButton('transition-group')
+														->transitions('com_content.articles', $canDo);
+			}
+		}
+		else
+		{
+			if ($canDo->get('core.edit.state'))
+			{
+				$dropdown = $toolbar->dropdownButton('status-group')
+														->text('JTOOLBAR_CHANGE_STATUS')
+														->toggleSplit(false)
+														->icon('fas fa-ellipsis-h')
+														->buttonClass('btn btn-action')
+														->listCheck(true);
+
+				$childBar = $dropdown->getChildToolbar();
+
 				$childBar->publish('articles.publish')->listCheck(true);
 
 				$childBar->unpublish('articles.unpublish')->listCheck(true);
-			}
 
-			if ($canDo->get('core.edit.state'))
-			{
 				$childBar->standardButton('featured')
-					->text('JFEATURE')
-					->task('articles.featured')
-					->listCheck(true);
-
+								 ->text('JFEATURE')
+								 ->task('articles.featured')
+								 ->listCheck(true);
 				$childBar->standardButton('unfeatured')
-					->text('JUNFEATURE')
-					->task('articles.unfeatured')
-					->listCheck(true);
-			}
+								 ->text('JUNFEATURE')
+								 ->task('articles.unfeatured')
+								 ->listCheck(true);
 
-			if ($canDo->get('core.execute.transition'))
-			{
 				$childBar->archive('articles.archive')->listCheck(true);
-			}
 
-			if ($canDo->get('core.edit.state'))
-			{
 				$childBar->checkin('articles.checkin')->listCheck(true);
+
+				if ($this->state->get('filter.published') != -2)
+				{
+					$childBar->trash('articles.trash')->listCheck(true);
+				}
+
+				// Add a batch button
+				if ($user->authorise('core.create', 'com_content')
+					&& $user->authorise('core.edit', 'com_content')
+					&& $user->authorise('core.edit.state', 'com_content'))
+				{
+					$childBar->popupButton('batch')
+									 ->text('JTOOLBAR_BATCH')
+									 ->selector('collapseModal')
+									 ->listCheck(true);
+				}
+
+				if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete'))
+				{
+					$childBar->delete('articles.delete')
+									 ->text('JTOOLBAR_EMPTY_TRASH')
+									 ->message('JGLOBAL_CONFIRM_DELETE')
+									 ->listCheck(true);
+				}
 			}
 
-			if ($canDo->get('core.execute.transition'))
-			{
-				$childBar->trash('articles.trash')->listCheck(true);
-			}
-
-			// Add a batch button
-			if ($user->authorise('core.create', 'com_content')
-				&& $user->authorise('core.edit', 'com_content')
-				&& $user->authorise('core.execute.transition', 'com_content'))
-			{
-				$childBar->popupButton('batch')
-					->text('JTOOLBAR_BATCH')
-					->selector('collapseModal')
-					->listCheck(true);
-			}
 		}
 
 		if ($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
