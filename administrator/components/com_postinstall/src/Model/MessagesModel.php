@@ -595,17 +595,17 @@ class MessagesModel extends BaseDatabaseModel
 
 			// Otherwise it's not the same row. Remove the old row before insert a new one.
 			$query = $db->getQuery(true)
-				->delete($db->quoteName($tableName))
-				->where(
-				[
-					$db->quoteName('extension_id') . ' = :extensionId',
-					$db->quoteName('type') . ' = :type',
-					$db->quoteName('title_key') . ' = :titleKey',
-				]
-			)
-			->bind(':extensionId', $extensionId, ParameterType::INTEGER)
-			->bind(':type', $options['type'])
-			->bind(':titleKey', $options['title_key']);
+									->delete($db->quoteName($tableName))
+									->where(
+										[
+											$db->quoteName('extension_id') . ' = :extensionId',
+											$db->quoteName('type') . ' = :type',
+											$db->quoteName('title_key') . ' = :titleKey',
+										]
+									)
+									->bind(':extensionId', $extensionId, ParameterType::INTEGER)
+									->bind(':type', $options['type'])
+									->bind(':titleKey', $options['title_key']);
 
 			$db->setQuery($query)->execute();
 		}
