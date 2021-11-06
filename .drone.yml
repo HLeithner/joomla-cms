@@ -22,7 +22,7 @@ steps:
       - npm ci --unsafe-perm
 
   - name: system-tests-mysql
-    depends_on: [ composer ]
+    depends_on: [ npm ]
     image: joomlaprojects/docker-images:systemtests
     environment:
       JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK: 1
@@ -31,9 +31,8 @@ steps:
 #      - sed -i 's/#LogLevel info/LogLevel debug/g' /etc/apache2/sites-available/000-default.conf
       - mv apache.conf /etc/apache2/sites-available/000-default.conf
       - cat /etc/apache2/sites-available/000-default.conf
-      - find /etc/php
-      - echo error_log /tests/Codeception/_output/php_erros.log >> /etc/php/7.2/apache/php.ini
-      - find /etc/php -exec cat {} +
+      - echo error_log /tests/Codeception/_output/php_erros.log >> /etc/php/7.2/apache2/php.ini
+      - cat /etc/php/7.2/apache2/php.ini
       - php -r "phpinfo();"
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" mysql
 
