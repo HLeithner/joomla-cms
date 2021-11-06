@@ -27,6 +27,10 @@ steps:
     environment:
       JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK: 1
     commands:
+      - sed -i 's/#LogLevel info/LogLevel debug/g' /etc/apache2/sites-available/000-default.conf
+      - sed -i 's/ErrorLog ${APACHE_LOG_DIR}/ErrorLog \/tests\/Codeception\/_output/g' /etc/apache2/sites-available/000-default.conf
+      - sed -i 's/CustomLog ${APACHE_LOG_DIR}/CustomLog \/tests\/Codeception\/_output/g' /etc/apache2/sites-available/000-default.conf
+      - php -r "phpinfo();"
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" mysql
 
   - name: system-tests-mysql8
