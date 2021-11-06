@@ -66,7 +66,7 @@ module.exports.scripts = async (options, path) => {
     if (file.match(/\.es5\.js$/)) {
       jsFilesPromises.push(handleES5File(file));
     } else if (file.match(/\.es6\.js$/) || file.match(/\.w-c\.es6\.js$/)) {
-      //esmFilesPromises.push(handleESMFile(file));
+      esmFilesPromises.push(handleESMFile(file));
     }
   });
 
