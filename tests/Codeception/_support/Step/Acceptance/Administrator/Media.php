@@ -42,8 +42,8 @@ class Media extends Admin
 
 		try
 		{
-			$I->waitForElement(MediaListPage::$loader, 3);
-			$I->waitForElementNotVisible(MediaListPage::$loader);
+			$I->waitForElement(MediaListPage::$loader, 5);
+			$I->waitForElementNotVisible(MediaListPage::$loader, 5);
 
 			// Add a small timeout to wait for rendering (otherwise it will fail when executed in headless browser)
 			$I->wait(0.5);
