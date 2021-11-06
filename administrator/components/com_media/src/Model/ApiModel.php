@@ -119,10 +119,9 @@ class ApiModel extends BaseDatabaseModel
 		$file->path    = $adapter . ":" . $file->path;
 		$file->adapter = $adapter;
 
-		$event = new FetchMediaFileEvent('onFetchMediaFile', ['file' => $file]);
-		Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+			Factory::getApplication()->triggerEvent('onFetchMediaFile', [$file]);
 
-		return $event->getArgument('file');
+			return $file;
 	}
 
 	/**
@@ -184,13 +183,12 @@ class ApiModel extends BaseDatabaseModel
 			$file->adapter = $adapter;
 		}
 
-		// Make proper indexes
 		$files = array_values($files);
 
-		$event = new FetchMediaFilesEvent('onFetchMediaFiles', ['files' => $files]);
-		Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+			Factory::getApplication()->triggerEvent('onFetchMediaFiles', [$files]);
 
-		return $event->getArgument('files');
+			// Return array with proper indexes
+			return $files;
 	}
 
 	/**
@@ -466,11 +464,14 @@ class ApiModel extends BaseDatabaseModel
 		}
 
 		$url = $this->getAdapter($adapter)->getUrl($path);
+			$newUrl = Factory::getApplication()->triggerEvent('onFetchMediaFileUrl', [$url]);
 
-		$event = new FetchMediaFileUrlEvent('onFetchMediaFileUrl', ['adapter' => $adapter, 'path' => $path, 'url' => $url]);
-		Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+			if ($newUrl && $newUrl !== false)
+			{
+					$url = $newUrl;
+			}
 
-		return $event->getArgument('url');
+			return $url;
 	}
 
 	/**
