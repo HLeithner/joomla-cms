@@ -31,6 +31,8 @@ steps:
 #      - sed -i 's/#LogLevel info/LogLevel debug/g' /etc/apache2/sites-available/000-default.conf
       - mv apache.conf /etc/apache2/sites-available/000-default.conf
       - cat /etc/apache2/sites-available/000-default.conf
+      - echo error_log /tests/Codeception/_output/php_erros.log >> /etc/php/7.2/apache/php.ini
+      - find /etc/php
       - find /etc/php -exec cat {} +
       - php -r "phpinfo();"
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" mysql
