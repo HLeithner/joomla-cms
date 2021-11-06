@@ -31,9 +31,9 @@ steps:
 #      - sed -i 's/#LogLevel info/LogLevel debug/g' /etc/apache2/sites-available/000-default.conf
       - mv apache.conf /etc/apache2/sites-available/000-default.conf
       - cat /etc/apache2/sites-available/000-default.conf
-      - echo "error_log $(pwd)/tests/Codeception/_output/php_erros.log" >> /etc/php/7.2/apache2/php.ini
-      - cat /etc/php/7.2/apache2/php.ini
-      - php -r "phpinfo();"
+      #- echo "error_log $(pwd)/tests/Codeception/_output/php_erros.log" >> /etc/php/7.2/apache2/php.ini
+      - echo "error_log /tests/www/php_errors.loh" >> /etc/php/7.2/apache2/php.ini
+      - tail /etc/php/7.2/apache2/php.ini
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" mysql
 
   - name: system-tests-mysql8
