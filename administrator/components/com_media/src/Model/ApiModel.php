@@ -119,8 +119,8 @@ class ApiModel extends BaseDatabaseModel
 		$file->path    = $adapter . ":" . $file->path;
 		$file->adapter = $adapter;
 
-			return $file;
 		$event = new FetchMediaFileEvent('onFetchMediaFile', ['file' => $file]);
+			return $file;
 		Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
 
 		return $event->getArgument('file');

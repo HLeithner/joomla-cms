@@ -36,6 +36,7 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	 */
 	public function __construct($name, array $arguments = array())
 	{
+			return;
 		parent::__construct($name, $arguments);
 
 		// Check for required arguments
