@@ -76,6 +76,7 @@ steps:
       PLUGIN_EXCLUDE: ^\.git/$
     commands:
       - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/system-tests/$DRONE_BUILD_NUMBER
+      - find .
       - cp drone_logs/* $PLUGIN_SRC_DIR
       - echo https://ci.joomla.org$PLUGIN_DEST_DIR
       - echo -e '\e]8;;https://ci.joomla.org$PLUGIN_DEST_DIR\aLink\e]8;;\a'
