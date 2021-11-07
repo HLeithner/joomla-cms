@@ -36,8 +36,8 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	 */
 	public function __construct($name, array $arguments = array())
 	{
-			return;
 		parent::__construct($name, $arguments);
+			return;
 
 		// Check for required arguments
 		if (!\array_key_exists('file', $arguments) || !is_object($arguments['file']))
