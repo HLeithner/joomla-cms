@@ -80,9 +80,9 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 
 	protected function setFile(\stdClass $value): \stdClass
 	{
-		return $value;
 		// Make immutable object
 		$value = clone $value;
+			return $value;
 
 		// Only "dir" or "file" is allowed
 		if (!isset($value->type) || ($value->type !== 'dir' && $value->type !== 'file'))
