@@ -99,15 +99,15 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 		// Non empty string
 		if (empty($value->path) || !is_string($value->path))
 		{
-				throw new BadMethodCallException("Property 'path' of argument 'file' of event {$this->name} has a wrong value. Valid: non empty string");
+		//		throw new BadMethodCallException("Property 'path' of argument 'file' of event {$this->name} has a wrong value. Valid: non empty string");
 		}
-			return $value;
 
 		// A string
 		if (!isset($value->extension) || !is_string($value->extension))
 		{
 				throw new BadMethodCallException("Property 'extension' of argument 'file' of event {$this->name} has a wrong value. Valid: string");
 		}
+			return $value;
 
 		// An empty string or an integer
 		if (!isset($value->size) ||
