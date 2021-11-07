@@ -89,13 +89,13 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 		{
 			throw new BadMethodCallException("Property 'type' of argument 'file' of event {$this->name} has a wrong value. Valid: 'dir' or 'file'");
 		}
-			return $value;
 
 		// Non empty string
 		if (empty($value->name) || !is_string($value->name))
 		{
 				throw new BadMethodCallException("Property 'name' of argument 'file' of event {$this->name} has a wrong value. Valid: non empty string");
 		}
+			return $value;
 
 		// Non empty string
 		if (empty($value->path) || !is_string($value->path))
