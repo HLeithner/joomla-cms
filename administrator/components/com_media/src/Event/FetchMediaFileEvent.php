@@ -77,6 +77,7 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	 *
 	 * @throws BadMethodCallException
 	 */
+	/*
 	protected function setFile(\stdClass $value): \stdClass
 	{
 		// Make immutable object
@@ -163,4 +164,5 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 
 		return $value;
 	}
+	*/
 }
