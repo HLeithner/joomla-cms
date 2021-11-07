@@ -82,6 +82,7 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	{
 		// Make immutable object
 		$value = clone $value;
+		PD::r($value);
 			return $value;
 
 		// Only "dir" or "file" is allowed
