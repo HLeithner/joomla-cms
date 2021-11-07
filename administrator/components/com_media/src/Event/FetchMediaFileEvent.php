@@ -82,13 +82,13 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	{
 		// Make immutable object
 		$value = clone $value;
+			\PD::r($value);
 
 		// Only "dir" or "file" is allowed
 		if (!isset($value->type) || ($value->type !== 'dir' && $value->type !== 'file'))
 		{
 			throw new BadMethodCallException("Property 'type' of argument 'file' of event {$this->name} has a wrong value. Valid: 'dir' or 'file'");
 		}
-			\PD::r($value);
 			return $value;
 
 		// Non empty string
