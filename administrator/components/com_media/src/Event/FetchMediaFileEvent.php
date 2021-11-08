@@ -91,7 +91,7 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 		// Make immutable object
 		$value = clone $value;
 		file_put_contents(JPATH_ROOT . '/tests/Codeception/_output/file.'.rand().'.dump', var_export($value, true));
-			~\PD::r($value);
+			\PD::r($value);
 			return $value;
 
 		// Only "dir" or "file" is allowed

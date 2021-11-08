@@ -76,7 +76,7 @@ steps:
       - find . > $(pwd)$PLUGIN_SRC_DIR/xxx.files
       - cp drone_logs/* $(pwd)$PLUGIN_SRC_DIR
       - echo https://ci.joomla.org$PLUGIN_DEST_DIR
-      - echo -e "\e]8;;https://ci.joomla.org$(echo $PLUGIN_DEST_DIR)\Artifacts\e]8;;\a"
+      - echo -e "\e]8;;https://ci.joomla.org$(echo $PLUGIN_DEST_DIR)\aArtifacts\e]8;;\a"
       - /bin/upload.sh
     when:
       status:
