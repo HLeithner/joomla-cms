@@ -90,8 +90,8 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	{
 		// Make immutable object
 		$value = clone $value;
-		mkdir(JPATH_ROOT . '/tests/Codeception/_output', 0777, true);
-		file_put_contents(JPATH_ROOT . '/tests/Codeception/_output/file.'.rand().'.dump', var_export($value, true));
+//		mkdir(JPATH_ROOT . '/tests/Codeception/_output', 0777, true);
+//		file_put_contents(JPATH_ROOT . '/tests/Codeception/_output/file.'.rand().'.dump', var_export($value, true));
 			\PD::pr($value);
 			return $value;
 
