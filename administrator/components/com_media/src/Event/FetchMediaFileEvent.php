@@ -17,6 +17,14 @@ use Joomla\CMS\Event\AbstractImmutableEvent;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
+use function file_put_contents;
+
+use function rand;
+
+use function var_export;
+
+use const JPATH_ROOT;
+
 /**
  * Event object for fetch media file.
  *
@@ -82,7 +90,9 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 	{
 		// Make immutable object
 		$value = clone $value;
+		file_put_contents(JPATH_ROOT . '/tests/Codeception/_output/file.'.rand().'.dump', var_export($value, true));
 			~\PD::r($value);
+			return $value;
 
 		// Only "dir" or "file" is allowed
 		if (!isset($value->type) || ($value->type !== 'dir' && $value->type !== 'file'))
@@ -107,7 +117,6 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 		{
 		//		throw new BadMethodCallException("Property 'extension' of argument 'file' of event {$this->name} has a wrong value. Valid: string");
 		}
-			return $value;
 
 		// An empty string or an integer
 		if (!isset($value->size) ||
