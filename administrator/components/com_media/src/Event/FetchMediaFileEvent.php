@@ -105,7 +105,7 @@ final class FetchMediaFileEvent extends AbstractImmutableEvent
 		// A string
 		if (!isset($value->extension) || !is_string($value->extension))
 		{
-				throw new BadMethodCallException("Property 'extension' of argument 'file' of event {$this->name} has a wrong value. Valid: string");
+		//		throw new BadMethodCallException("Property 'extension' of argument 'file' of event {$this->name} has a wrong value. Valid: string");
 		}
 			return $value;
 
