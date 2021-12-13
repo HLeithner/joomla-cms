@@ -30,4 +30,10 @@ sleep 6
 
 echo "[RUNNER] Run Codeception"
 php libraries/vendor/bin/codecept build
-php libraries/vendor/bin/codecept run --fail-fast --steps --debug --env $DB_ENGINE tests/Codeception/acceptance/
+php libraries/vendor/bin/codecept run --fail-fast --steps --debug --env $DB_ENGINE tests/Codeception/acceptance/01-install
+
+wget https://joomla.itronic.at/latest/plg_system_ploxdebug.zip -O /tests/www/test-install/plg_system_ploxdebug.zip
+
+php /tests/www/test-install/cli/joomla.php extension:install --path /tests/www/test-install/plg_system_ploxdebug.zip
+
+php libraries/vendor/bin/codecept run --fail-fast --steps --debug --env $DB_ENGINE tests/Codeception/acceptance/administrator

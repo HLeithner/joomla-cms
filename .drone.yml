@@ -15,125 +15,23 @@ steps:
       - composer install --no-progress --no-suggest
       - patch -N -p0 < tests/patch/phpunit8_php8_match.patch || echo "Ignore this error."
 
-  - name: phpcs
-    image: joomlaprojects/docker-images:php7.2
-    depends_on: [ composer ]
-    commands:
-      - echo $(date)
-      - ./libraries/vendor/bin/phpcs --extensions=php -p --standard=libraries/vendor/joomla/cms-coding-standards/lib/Joomla-CMS .
-      - echo $(date)
-
   - name: npm
     image: node:14-alpine
-    depends_on: [ phpcs ]
+    depends_on: [ composer ]
     commands:
       - npm ci --unsafe-perm
 
-  - name: php72-unit
-    depends_on: [ phpcs ]
-    image: joomlaprojects/docker-images:php7.2
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Unit
-
-  - name: php73-unit
-    depends_on: [ phpcs ]
-    image: joomlaprojects/docker-images:php7.3
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Unit
-
-  - name: php74-unit
-    depends_on: [ phpcs ]
-    image: joomlaprojects/docker-images:php7.4
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Unit
-
-  - name: php80-unit
-    depends_on: [ phpcs ]
-    image: joomlaprojects/docker-images:php8.0
-    failure: ignore
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Unit
-
-  - name: php72-integration
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php7.2
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration
-
-  - name: php73-integration
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php7.3
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration
-
-  - name: php74-integration
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php7.4
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration
-
-  - name: php80-integration
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php8.0
-    failure: ignore
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration
-
-  - name: php72-integration-pgsql
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php7.2
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration --configuration phpunit-pgsql.xml.dist
-
-  - name: php73-integration-pgsql
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php7.3
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration --configuration phpunit-pgsql.xml.dist
-
-  - name: php74-integration-pgsql
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php7.4
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration --configuration phpunit-pgsql.xml.dist
-
-  - name: php80-integration-pgsql
-    depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php8.0
-    failure: ignore
-    commands:
-      - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration --configuration phpunit-pgsql.xml.dist
-
-  - name: scss-cs
-    depends_on: [ npm ]
-    image: node:current-alpine
-    commands:
-      - npm run lint:css
-
-  - name: javascript-cs
-    depends_on: [ npm ]
-    image: node:current-alpine
-    commands:
-      - npm run lint:js
-
   - name: system-tests-mysql
-    depends_on: [ javascript-cs ]
+    depends_on: [ npm ]
     image: joomlaprojects/docker-images:systemtests
     environment:
       JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK: 1
     commands:
+      - mkdir drone_logs
+      - mv apache.conf /etc/apache2/sites-available/000-default.conf
+      #- echo "error_log $(pwd)/tests/Codeception/_output/php_erros.log" >> /etc/php/7.2/apache2/php.ini
+      - echo "error_log $(pwd)/drone_logs/php_errors.log" >> /etc/php/7.2/apache2/php.ini
+      - cp /etc/php/7.2/apache2/php.ini $(pwd)/drone_logs
       - bash tests/Codeception/drone-system-run.sh "$(pwd)" mysql
 
   - name: system-tests-mysql8
@@ -175,7 +73,10 @@ steps:
       PLUGIN_EXCLUDE: ^\.git/$
     commands:
       - export PLUGIN_DEST_DIR=$PLUGIN_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/system-tests/$DRONE_BUILD_NUMBER
+      - find . > $(pwd)$PLUGIN_SRC_DIR/xxx.files
+      - cp drone_logs/* $(pwd)$PLUGIN_SRC_DIR
       - echo https://ci.joomla.org$PLUGIN_DEST_DIR
+      - echo -e "\e]8;;https://ci.joomla.org$(echo $PLUGIN_DEST_DIR)\aArtifacts\e]8;;\a"
       - /bin/upload.sh
     when:
       status:
@@ -215,39 +116,6 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: joomla_ut
       POSTGRES_DB: test_joomla
-
----
-kind: pipeline
-name: package
-
-steps:
-  - name: packager
-    image: joomlaprojects/docker-images:packager
-    environment:
-      FTP_USERNAME:
-        from_secret: ftpusername
-      FTP_PASSWORD:
-        from_secret: ftppassword
-      FTP_HOSTNAME: ci.joomla.org
-      FTP_PORT: "21"
-      FTP_DEST_DIR: /artifacts
-      FTP_VERIFY: "false"
-      FTP_SECURE: "true"
-      HTTP_ROOT: "https://ci.joomla.org/artifacts"
-      DRONE_PULL_REQUEST: DRONE_PULL_REQUEST
-      DRONE_COMMIT: DRONE_COMMIT
-      GITHUB_TOKEN:
-        from_secret: github_token
-    commands:
-      - if [ $DRONE_REPO_NAME != 'joomla-cms' ]; then echo "The packager only runs on the joomla/joomla-cms repo"; exit 0; fi
-      - /bin/drone_build.sh
-    volumes:
-      - name: reference
-        path: /reference
-    when:
-      branch:
-        - 4.0-dev
-
 
 ---
 kind: signature
