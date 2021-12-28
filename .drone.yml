@@ -11,6 +11,7 @@ steps:
       - name: composer-cache
         path: /tmp/composer-cache
     commands:
+      - composer --version
       - composer validate --no-check-all --strict
       - composer install --no-progress --no-suggest
       - patch -N -p0 < tests/patch/phpunit8_php8_match.patch || echo "Ignore this error."
