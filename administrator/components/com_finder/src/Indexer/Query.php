@@ -820,7 +820,6 @@ class Query
 					// Handle a before and after date filters.
 					case 'before':
 					case 'after':
-					{
 						// Get the time offset.
 						$offset = Factory::getApplication()->get('offset');
 
@@ -845,11 +844,9 @@ class Query
 						}
 
 						break;
-					}
 
 					// Handle a taxonomy branch filter.
 					default:
-					{
 						// Try to find the node id.
 						$return = Taxonomy::getNodeByTitle($modifier, $value);
 
@@ -871,7 +868,6 @@ class Query
 						}
 
 						break;
-					}
 				}
 
 				// Clean up the input string again.
