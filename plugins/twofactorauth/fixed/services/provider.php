@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Twofactorauth.fixed
@@ -17,25 +18,25 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Twofactorauth\Fixed\Extension\Fixed;
 
 return new class implements ServiceProviderInterface {
-	/**
-	 * Registers the service provider with a DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  void
-	 *
-	 * @since __DEPLOY_VERSION__
-	 */
-	public function register(Container $container)
-	{
-		$container->set(
-			PluginInterface::class,
-			function (Container $container) {
-				$config  = (array) PluginHelper::getPlugin('twofactorauth', 'fixed');
-				$subject = $container->get(DispatcherInterface::class);
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  void
+     *
+     * @since __DEPLOY_VERSION__
+     */
+    public function register(Container $container)
+    {
+        $container->set(
+            PluginInterface::class,
+            function (Container $container) {
+                $config  = (array) PluginHelper::getPlugin('twofactorauth', 'fixed');
+                $subject = $container->get(DispatcherInterface::class);
 
-				return new Fixed($subject, $config);
-			}
-		);
-	}
+                return new Fixed($subject, $config);
+            }
+        );
+    }
 };

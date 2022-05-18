@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -30,155 +31,146 @@ use Joomla\Component\Users\Administrator\View\SiteTemplateTrait;
  */
 class HtmlView extends BaseHtmlView
 {
-	use SiteTemplateTrait;
+    use SiteTemplateTrait;
 
-	/**
-	 * Is this an administrator page?
-	 *
-	 * @var   boolean
-	 * @since __DEPLOY_VERSION__
-	 */
-	public $isAdmin = false;
+    /**
+     * Is this an administrator page?
+     *
+     * @var   boolean
+     * @since __DEPLOY_VERSION__
+     */
+    public $isAdmin = false;
 
-	/**
-	 * The TFA Methods available for this user
-	 *
-	 * @var   array
-	 * @since __DEPLOY_VERSION__
-	 */
-	public $methods = [];
+    /**
+     * The TFA Methods available for this user
+     *
+     * @var   array
+     * @since __DEPLOY_VERSION__
+     */
+    public $methods = [];
 
-	/**
-	 * The return URL to use for all links and forms
-	 *
-	 * @var   string
-	 * @since __DEPLOY_VERSION__
-	 */
-	public $returnURL = null;
+    /**
+     * The return URL to use for all links and forms
+     *
+     * @var   string
+     * @since __DEPLOY_VERSION__
+     */
+    public $returnURL = null;
 
-	/**
-	 * Are there any active TFA Methods at all?
-	 *
-	 * @var   boolean
-	 * @since __DEPLOY_VERSION__
-	 */
-	public $tfaActive = false;
+    /**
+     * Are there any active TFA Methods at all?
+     *
+     * @var   boolean
+     * @since __DEPLOY_VERSION__
+     */
+    public $tfaActive = false;
 
-	/**
-	 * Which Method has the default record?
-	 *
-	 * @var   string
-	 * @since __DEPLOY_VERSION__
-	 */
-	public $defaultMethod = '';
+    /**
+     * Which Method has the default record?
+     *
+     * @var   string
+     * @since __DEPLOY_VERSION__
+     */
+    public $defaultMethod = '';
 
-	/**
-	 * The user object used to display this page
-	 *
-	 * @var   User
-	 * @since __DEPLOY_VERSION__
-	 */
-	public $user = null;
+    /**
+     * The user object used to display this page
+     *
+     * @var   User
+     * @since __DEPLOY_VERSION__
+     */
+    public $user = null;
 
-	/**
-	 * Execute and display a template script.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 *
-	 * @throws  \Exception
-	 * @see     \JViewLegacy::loadTemplate()
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function display($tpl = null): void
-	{
-		$this->setSiteTemplateStyle();
+    /**
+     * Execute and display a template script.
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     *
+     * @throws  \Exception
+     * @see     \JViewLegacy::loadTemplate()
+     * @since   __DEPLOY_VERSION__
+     */
+    public function display($tpl = null): void
+    {
+        $this->setSiteTemplateStyle();
 
-		$app = Factory::getApplication();
+        $app = Factory::getApplication();
 
-		if (empty($this->user))
-		{
-			$this->user = Factory::getApplication()->getIdentity()
-				?: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
-		}
+        if (empty($this->user)) {
+            $this->user = Factory::getApplication()->getIdentity()
+                ?: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
+        }
 
-		/** @var MethodsModel $model */
-		$model = $this->getModel();
+        /** @var MethodsModel $model */
+        $model = $this->getModel();
 
-		if ($this->getLayout() != 'firsttime')
-		{
-			$this->setLayout('default');
-		}
+        if ($this->getLayout() != 'firsttime') {
+            $this->setLayout('default');
+        }
 
-		$this->methods = $model->getMethods($this->user);
-		$this->isAdmin = $app->isClient('administrator');
-		$activeRecords = 0;
+        $this->methods = $model->getMethods($this->user);
+        $this->isAdmin = $app->isClient('administrator');
+        $activeRecords = 0;
 
-		foreach ($this->methods as $methodName => $method)
-		{
-			$methodActiveRecords = count($method['active']);
+        foreach ($this->methods as $methodName => $method) {
+            $methodActiveRecords = count($method['active']);
 
-			if (!$methodActiveRecords)
-			{
-				continue;
-			}
+            if (!$methodActiveRecords) {
+                continue;
+            }
 
-			$activeRecords   += $methodActiveRecords;
-			$this->tfaActive = true;
+            $activeRecords   += $methodActiveRecords;
+            $this->tfaActive = true;
 
-			foreach ($method['active'] as $record)
-			{
-				if ($record->default)
-				{
-					$this->defaultMethod = $methodName;
+            foreach ($method['active'] as $record) {
+                if ($record->default) {
+                    $this->defaultMethod = $methodName;
 
-					break;
-				}
-			}
-		}
+                    break;
+                }
+            }
+        }
 
-		// If there are no backup codes yet we should create new ones
-		/** @var BackupcodesModel $model */
-		$model       = $this->getModel('backupcodes');
-		$backupCodes = $model->getBackupCodes($this->user);
+        // If there are no backup codes yet we should create new ones
+        /** @var BackupcodesModel $model */
+        $model       = $this->getModel('backupcodes');
+        $backupCodes = $model->getBackupCodes($this->user);
 
-		if ($activeRecords && empty($backupCodes))
-		{
-			$model->regenerateBackupCodes($this->user);
-		}
+        if ($activeRecords && empty($backupCodes)) {
+            $model->regenerateBackupCodes($this->user);
+        }
 
-		$backupCodesRecord = $model->getBackupCodesRecord($this->user);
+        $backupCodesRecord = $model->getBackupCodesRecord($this->user);
 
-		if (!is_null($backupCodesRecord))
-		{
-			$this->methods['backupcodes'] = new MethodDescriptor(
-				[
-					'name'       => 'backupcodes',
-					'display'    => Text::_('COM_USERS_USER_OTEPS'),
-					'shortinfo'  => Text::_('COM_USERS_USER_OTEPS_DESC'),
-					'image'      => 'media/com_users/images/emergency.svg',
-					'canDisable' => false,
-					'active'     => [$backupCodesRecord],
-				]
-			);
-		}
+        if (!is_null($backupCodesRecord)) {
+            $this->methods['backupcodes'] = new MethodDescriptor(
+                [
+                    'name'       => 'backupcodes',
+                    'display'    => Text::_('COM_USERS_USER_OTEPS'),
+                    'shortinfo'  => Text::_('COM_USERS_USER_OTEPS_DESC'),
+                    'image'      => 'media/com_users/images/emergency.svg',
+                    'canDisable' => false,
+                    'active'     => [$backupCodesRecord],
+                ]
+            );
+        }
 
-		// Back-end: always show a title in the 'title' module position, not in the page body
-		if ($this->isAdmin)
-		{
-			ToolbarHelper::title(Text::_('COM_USERS_TFA_LIST_PAGE_HEAD'), 'users user-lock');
-			$this->title = '';
+        // Back-end: always show a title in the 'title' module position, not in the page body
+        if ($this->isAdmin) {
+            ToolbarHelper::title(Text::_('COM_USERS_TFA_LIST_PAGE_HEAD'), 'users user-lock');
+            $this->title = '';
 
-			ToolbarHelper::back('JTOOLBAR_BACK', Route::_('index.php?option=com_users'));
-		}
+            ToolbarHelper::back('JTOOLBAR_BACK', Route::_('index.php?option=com_users'));
+        }
 
-		// Display the view
-		parent::display($tpl);
+        // Display the view
+        parent::display($tpl);
 
-		$app->triggerEvent(
-			'onComUsersViewMethodsAfterDisplay',
-			new GenericEvent('onComUsersViewMethodsAfterDisplay', [$this])
-		);
-	}
+        $app->triggerEvent(
+            'onComUsersViewMethodsAfterDisplay',
+            new GenericEvent('onComUsersViewMethodsAfterDisplay', [$this])
+        );
+    }
 }

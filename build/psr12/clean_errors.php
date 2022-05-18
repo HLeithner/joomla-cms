@@ -32,6 +32,10 @@ foreach ($data as $error) {
                                      *
                                      * The order is important.
                                      */
+                                    "\defined('_JEXEC') || die();",
+                                    "defined('_JEXEC') || die();",
+                                    "\defined('_JEXEC') || die;",
+                                    "defined('_JEXEC') || die;",
                                     "\defined('_JEXEC') or die();",
                                     "defined('_JEXEC') or die();",
                                     "\defined('_JEXEC') or die;",

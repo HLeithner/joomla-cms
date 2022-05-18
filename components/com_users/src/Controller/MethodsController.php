@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -18,5 +19,4 @@ use Joomla\Component\Users\Administrator\Controller\MethodsController as AdminMe
  */
 class MethodsController extends AdminMethodsController
 {
-
 }

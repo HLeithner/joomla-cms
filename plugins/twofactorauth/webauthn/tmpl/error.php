@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Twofactorauth.webauthn
@@ -14,12 +15,12 @@ use Joomla\CMS\Language\Text;
 
 ?>
 <div id="twofactorauth-webauthn-missing" class="my-2">
-	<div class="alert alert-danger">
-		<h4>
-			<?php echo Text::_('PLG_TWOFACTORAUTH_WEBAUTHN_ERR_NOTAVAILABLE_HEAD'); ?>
-		</h4>
-		<p>
-			<?php echo Text::_('PLG_TWOFACTORAUTH_WEBAUTHN_ERR_NOTAVAILABLE_BODY'); ?>
-		</p>
-	</div>
+    <div class="alert alert-danger">
+        <h4>
+            <?php echo Text::_('PLG_TWOFACTORAUTH_WEBAUTHN_ERR_NOTAVAILABLE_HEAD'); ?>
+        </h4>
+        <p>
+            <?php echo Text::_('PLG_TWOFACTORAUTH_WEBAUTHN_ERR_NOTAVAILABLE_BODY'); ?>
+        </p>
+    </div>
 </div>

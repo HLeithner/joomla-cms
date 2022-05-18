@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Twofactorauth.webauthn
@@ -19,12 +20,12 @@ $this->app->getDocument()->getWebAssetManager()->useScript('plg_twofactorauth_we
 
 ?>
 <div id="twofactorauth-webauthn-controls" class="my-2">
-	<input id="twofactorauth-method-code" name="code" value="" placeholder="" type="hidden">
+    <input id="twofactorauth-method-code" name="code" value="" placeholder="" type="hidden">
 
-	<a id="plg_twofactorauth_webauthn_register_button"
-		class="btn btn-primary btn-lg btn-big"
-	>
-		<span class="icon icon-lock" aria-hidden="true"></span>
-		<?php echo Text::_('PLG_TWOFACTORAUTH_WEBAUTHN_LBL_REGISTERKEY'); ?>
-	</a>
+    <a id="plg_twofactorauth_webauthn_register_button"
+        class="btn btn-primary btn-lg btn-big"
+    >
+        <span class="icon icon-lock" aria-hidden="true"></span>
+        <?php echo Text::_('PLG_TWOFACTORAUTH_WEBAUTHN_LBL_REGISTERKEY'); ?>
+    </a>
 </div>

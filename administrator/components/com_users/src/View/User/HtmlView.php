@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -27,148 +28,140 @@ use Joomla\Component\Users\Administrator\Helper\Tfa;
  */
 class HtmlView extends BaseHtmlView
 {
-	/**
-	 * The Form object
-	 *
-	 * @var  \Joomla\CMS\Form\Form
-	 */
-	protected $form;
+    /**
+     * The Form object
+     *
+     * @var  \Joomla\CMS\Form\Form
+     */
+    protected $form;
 
-	/**
-	 * The active item
-	 *
-	 * @var  object
-	 */
-	protected $item;
+    /**
+     * The active item
+     *
+     * @var  object
+     */
+    protected $item;
 
-	/**
-	 * Gets the available groups
-	 *
-	 * @var  array
-	 */
-	protected $grouplist;
+    /**
+     * Gets the available groups
+     *
+     * @var  array
+     */
+    protected $grouplist;
 
-	/**
-	 * The groups this user is assigned to
-	 *
-	 * @var     array
-	 * @since   1.6
-	 */
-	protected $groups;
+    /**
+     * The groups this user is assigned to
+     *
+     * @var     array
+     * @since   1.6
+     */
+    protected $groups;
 
-	/**
-	 * The model state
-	 *
-	 * @var  CMSObject
-	 */
-	protected $state;
+    /**
+     * The model state
+     *
+     * @var  CMSObject
+     */
+    protected $state;
 
-	/**
-	 * The Two Factor Authentication configuration interface for the user.
-	 *
-	 * @var   string|null
-	 * @since __DEPLOY_VERSION__
-	 */
-	protected $tfaConfigurationUI;
+    /**
+     * The Two Factor Authentication configuration interface for the user.
+     *
+     * @var   string|null
+     * @since __DEPLOY_VERSION__
+     */
+    protected $tfaConfigurationUI;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.5
-	 */
-	public function display($tpl = null)
-	{
-		// If no item found, dont show the edit screen, redirect with message
-		if (false === $this->item = $this->get('Item'))
-		{
-			$app = Factory::getApplication();
-			$app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_NOT_EXIST'), 'error');
-			$app->redirect('index.php?option=com_users&view=users');
-		}
+    /**
+     * Display the view
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     *
+     * @since   1.5
+     */
+    public function display($tpl = null)
+    {
+        // If no item found, dont show the edit screen, redirect with message
+        if (false === $this->item = $this->get('Item')) {
+            $app = Factory::getApplication();
+            $app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_NOT_EXIST'), 'error');
+            $app->redirect('index.php?option=com_users&view=users');
+        }
 
-		$this->form                     = $this->get('Form');
-		$this->state                    = $this->get('State');
+        $this->form                     = $this->get('Form');
+        $this->state                    = $this->get('State');
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new GenericDataException(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new GenericDataException(implode("\n", $errors), 500);
+        }
 
-		// Prevent user from modifying own group(s)
-		$user = Factory::getApplication()->getIdentity();
+        // Prevent user from modifying own group(s)
+        $user = Factory::getApplication()->getIdentity();
 
-		if ((int) $user->id != (int) $this->item->id || $user->authorise('core.admin'))
-		{
-			$this->grouplist = $this->get('Groups');
-			$this->groups    = $this->get('AssignedGroups');
-		}
+        if ((int) $user->id != (int) $this->item->id || $user->authorise('core.admin')) {
+            $this->grouplist = $this->get('Groups');
+            $this->groups    = $this->get('AssignedGroups');
+        }
 
-		$this->form->setValue('password', null);
-		$this->form->setValue('password2', null);
+        $this->form->setValue('password', null);
+        $this->form->setValue('password2', null);
 
-		$this->tfaConfigurationUI = Tfa::getConfigurationInterface($user);
+        $this->tfaConfigurationUI = Tfa::getConfigurationInterface($user);
 
-		parent::display($tpl);
-		$this->addToolbar();
-	}
+        parent::display($tpl);
+        $this->addToolbar();
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return void
-	 *
-	 * @since   1.6
-	 * @throws  \Exception
-	 */
-	protected function addToolbar()
-	{
-		Factory::getApplication()->input->set('hidemainmenu', true);
+    /**
+     * Add the page title and toolbar.
+     *
+     * @return void
+     *
+     * @since   1.6
+     * @throws  \Exception
+     */
+    protected function addToolbar()
+    {
+        Factory::getApplication()->input->set('hidemainmenu', true);
 
-		$user      = Factory::getApplication()->getIdentity();
-		$canDo     = ContentHelper::getActions('com_users');
-		$isNew     = ($this->item->id == 0);
-		$isProfile = $this->item->id == $user->id;
+        $user      = Factory::getApplication()->getIdentity();
+        $canDo     = ContentHelper::getActions('com_users');
+        $isNew     = ($this->item->id == 0);
+        $isProfile = $this->item->id == $user->id;
 
-		ToolbarHelper::title(
-			Text::_(
-				$isNew ? 'COM_USERS_VIEW_NEW_USER_TITLE' : ($isProfile ? 'COM_USERS_VIEW_EDIT_PROFILE_TITLE' : 'COM_USERS_VIEW_EDIT_USER_TITLE')
-			),
-			'user ' . ($isNew ? 'user-add' : ($isProfile ? 'user-profile' : 'user-edit'))
-		);
+        ToolbarHelper::title(
+            Text::_(
+                $isNew ? 'COM_USERS_VIEW_NEW_USER_TITLE' : ($isProfile ? 'COM_USERS_VIEW_EDIT_PROFILE_TITLE' : 'COM_USERS_VIEW_EDIT_USER_TITLE')
+            ),
+            'user ' . ($isNew ? 'user-add' : ($isProfile ? 'user-profile' : 'user-edit'))
+        );
 
-		$toolbarButtons = [];
+        $toolbarButtons = [];
 
-		if ($canDo->get('core.edit') || $canDo->get('core.create') || $isProfile)
-		{
-			ToolbarHelper::apply('user.apply');
-			$toolbarButtons[] = ['save', 'user.save'];
-		}
+        if ($canDo->get('core.edit') || $canDo->get('core.create') || $isProfile) {
+            ToolbarHelper::apply('user.apply');
+            $toolbarButtons[] = ['save', 'user.save'];
+        }
 
-		if ($canDo->get('core.create') && $canDo->get('core.manage'))
-		{
-			$toolbarButtons[] = ['save2new', 'user.save2new'];
-		}
+        if ($canDo->get('core.create') && $canDo->get('core.manage')) {
+            $toolbarButtons[] = ['save2new', 'user.save2new'];
+        }
 
-		ToolbarHelper::saveGroup(
-			$toolbarButtons,
-			'btn-success'
-		);
+        ToolbarHelper::saveGroup(
+            $toolbarButtons,
+            'btn-success'
+        );
 
-		if (empty($this->item->id))
-		{
-			ToolbarHelper::cancel('user.cancel');
-		}
-		else
-		{
-			ToolbarHelper::cancel('user.cancel', 'JTOOLBAR_CLOSE');
-		}
+        if (empty($this->item->id)) {
+            ToolbarHelper::cancel('user.cancel');
+        } else {
+            ToolbarHelper::cancel('user.cancel', 'JTOOLBAR_CLOSE');
+        }
 
-		ToolbarHelper::divider();
-		ToolbarHelper::help('Users:_Edit_Profile');
-	}
+        ToolbarHelper::divider();
+        ToolbarHelper::help('Users:_Edit_Profile');
+    }
 }

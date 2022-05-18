@@ -10,13 +10,16 @@
 
 // Set defaults
 $root      = dirname(dirname(__DIR__));
+$php       = 'php';
+$git       = 'git';
 $tmpDir    = $root . '/build/tmp/psr12';
 $checkPath = false;
 $tasks     = [
-    'CBF'   => false,
-    'CS'    => false,
-    'CLEAN' => false,
-    'CMS'   => false,
+    'CBF'    => false,
+    'CS'     => false,
+    'CLEAN'  => false,
+    'CMS'    => false,
+    'BRANCH' => false,
 ];
 
 $script = array_shift($argv);
@@ -52,6 +55,10 @@ if (empty($argv)) {
                 This tasks activates all other tasks and automatically
                 commits the changes after both CBF runs. Usually only
                 needed for the first cms conversion.
+              * BRANCH
+                This tasks updates all files changed by the current
+                branch compared to the psr12anchor tag. This allows
+                to update a create pull request.
 
             Path:
               Providing a path will only check the directories or files
@@ -82,10 +89,31 @@ foreach ($argv as $arg) {
 }
 
 if ($tasks['CMS']) {
-    $tasks['CBF']   = true;
-    $tasks['CS']    = true;
-    $tasks['CLEAN'] = true;
+    $tasks['CBF']    = true;
+    $tasks['CS']     = true;
+    $tasks['CLEAN']  = true;
 }
+
+if ($tasks['BRANCH']) {
+    $tasks['CMS']    = true;
+    $tasks['CBF']    = true;
+    $tasks['CS']     = true;
+    $tasks['CLEAN']  = true;
+
+    $cmd = $git . ' --no-pager diff --name-only psr12anchor..HEAD';
+    exec($cmd, $output, $result);
+    if ($result !== 0) {
+        die('Unable to find changes for this branch');
+    }
+    foreach($output as $k => $line) {
+        if (substr($line, -4) !== '.php') {
+            unset($output[$k]);
+        }
+    }
+
+    $checkPath = implode(',', $output);
+}
+
 
 $items = [];
 if ($checkPath) {
@@ -172,8 +200,6 @@ unset($cleanItems, $item);
 
 @mkdir($tmpDir, 0777, true);
 
-$php        = 'php';
-$git        = 'git';
 $cbfOptions = "-p --standard=" . __DIR__ . "/ruleset.xml --extensions=php";
 $csOptions  = "--standard=" . __DIR__ . "/ruleset.xml --extensions=php";
 $csOptions  .= " --report=$root/build/psr12/phpcs.joomla.report.php";
@@ -253,4 +279,3 @@ if (!empty($tasks['CMS'])) {
 
         Text;
 }
-

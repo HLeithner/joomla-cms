@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -25,8 +26,8 @@ use Joomla\Database\ParameterType;
 // phpcs:ignore
 function com_users_postinstall_condition(): bool
 {
-	return !PluginHelper::isEnabled('twofactorauth', 'webauthn')
-		&& !PluginHelper::isEnabled('twofactorauth', 'email');
+    return !PluginHelper::isEnabled('twofactorauth', 'webauthn')
+        && !PluginHelper::isEnabled('twofactorauth', 'email');
 }
 
 /**
@@ -40,28 +41,28 @@ function com_users_postinstall_condition(): bool
 // phpcs:ignore
 function com_users_postinstall_action(): void
 {
-	/** @var DatabaseDriver $db */
-	$db             = Factory::getContainer()->get('DatabaseDriver');
-	$coreTfaPlugins = ['email', 'totp', 'webauthn', 'yubikey'];
+    /** @var DatabaseDriver $db */
+    $db             = Factory::getContainer()->get('DatabaseDriver');
+    $coreTfaPlugins = ['email', 'totp', 'webauthn', 'yubikey'];
 
-	$query = $db->getQuery(true)
-		->update($db->quoteName('#__extensions'))
-		->set($db->quoteName('enabled') . ' = 1')
-		->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-		->where($db->quoteName('folder') . ' = ' . $db->quote('twofactorauth'))
-		->whereIn($db->quoteName('element'), $coreTfaPlugins, ParameterType::STRING);
-	$db->setQuery($query);
-	$db->execute();
+    $query = $db->getQuery(true)
+        ->update($db->quoteName('#__extensions'))
+        ->set($db->quoteName('enabled') . ' = 1')
+        ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+        ->where($db->quoteName('folder') . ' = ' . $db->quote('twofactorauth'))
+        ->whereIn($db->quoteName('element'), $coreTfaPlugins, ParameterType::STRING);
+    $db->setQuery($query);
+    $db->execute();
 
-	$query = $db->getQuery(true)
-		->select($db->quoteName('extension_id'))
-		->from($db->quoteName('#__extensions'))
-		->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-		->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
-		->where($db->quoteName('element') . ' = ' . $db->quote('httpheaders'));
-	$db->setQuery($query);
-	$extensionId = $db->loadResult();
+    $query = $db->getQuery(true)
+        ->select($db->quoteName('extension_id'))
+        ->from($db->quoteName('#__extensions'))
+        ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+        ->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+        ->where($db->quoteName('element') . ' = ' . $db->quote('httpheaders'));
+    $db->setQuery($query);
+    $extensionId = $db->loadResult();
 
-	$url = 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $extensionId;
-	Factory::getApplication()->redirect($url);
+    $url = 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $extensionId;
+    Factory::getApplication()->redirect($url);
 }

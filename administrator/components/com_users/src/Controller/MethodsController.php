@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -33,188 +34,179 @@ use RuntimeException;
  */
 class MethodsController extends BaseController
 {
-	/**
-	 * Public constructor
-	 *
-	 * @param   array                     $config   Plugin configuration
-	 * @param   MVCFactoryInterface|null  $factory  MVC Factory for the com_users component
-	 * @param   CMSApplication|null       $app      CMS application object
-	 * @param   Input|null                $input    Joomla CMS input object
-	 *
-	 * @since __DEPLOY_VERSION__
-	 */
-	public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
-	{
-		// We have to tell Joomla what is the name of the view, otherwise it defaults to the name of the *component*.
-		$config['default_view'] = 'Methods';
+    /**
+     * Public constructor
+     *
+     * @param   array                     $config   Plugin configuration
+     * @param   MVCFactoryInterface|null  $factory  MVC Factory for the com_users component
+     * @param   CMSApplication|null       $app      CMS application object
+     * @param   Input|null                $input    Joomla CMS input object
+     *
+     * @since __DEPLOY_VERSION__
+     */
+    public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
+    {
+        // We have to tell Joomla what is the name of the view, otherwise it defaults to the name of the *component*.
+        $config['default_view'] = 'Methods';
 
-		parent::__construct($config, $factory, $app, $input);
-	}
+        parent::__construct($config, $factory, $app, $input);
+    }
 
-	/**
-	 * Disable Two Factor Authentication for the current user
-	 *
-	 * @param   bool   $cachable     Can this view be cached
-	 * @param   array  $urlparams    An array of safe url parameters and their variable types, for valid values see
-	 *                               {@link JFilterInput::clean()}.
-	 *
-	 * @return  void
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function disable($cachable = false, $urlparams = []): void
-	{
-		$this->assertLoggedInUser();
+    /**
+     * Disable Two Factor Authentication for the current user
+     *
+     * @param   bool   $cachable     Can this view be cached
+     * @param   array  $urlparams    An array of safe url parameters and their variable types, for valid values see
+     *                               {@link JFilterInput::clean()}.
+     *
+     * @return  void
+     * @since   __DEPLOY_VERSION__
+     */
+    public function disable($cachable = false, $urlparams = []): void
+    {
+        $this->assertLoggedInUser();
 
-		$this->checkToken($this->input->getMethod());
+        $this->checkToken($this->input->getMethod());
 
-		// Make sure I am allowed to edit the specified user
-		$userId = $this->input->getInt('user_id', null);
-		$user   = ($userId === null)
-			? $this->app->getIdentity()
-			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-		$user   = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
+        // Make sure I am allowed to edit the specified user
+        $userId = $this->input->getInt('user_id', null);
+        $user   = ($userId === null)
+            ? $this->app->getIdentity()
+            : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+        $user   = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
 
-		if (!TfaHelper::canEditUser($user))
-		{
-			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
+        if (!TfaHelper::canEditUser($user)) {
+            throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
 
-		// Delete all TFA Methods for the user
-		/** @var MethodsModel $model */
-		$model   = $this->getModel('Methods');
-		$type    = null;
-		$message = null;
+        // Delete all TFA Methods for the user
+        /** @var MethodsModel $model */
+        $model   = $this->getModel('Methods');
+        $type    = null;
+        $message = null;
 
-		$this->app->triggerEvent(
-			'onComUsersControllerMethodsBeforeDisable',
-			new GenericEvent('onComUsersControllerMethodsBeforeDisable', [$user])
-		);
+        $this->app->triggerEvent(
+            'onComUsersControllerMethodsBeforeDisable',
+            new GenericEvent('onComUsersControllerMethodsBeforeDisable', [$user])
+        );
 
-		try
-		{
-			$model->deleteAll($user);
-		}
-		catch (Exception $e)
-		{
-			$message = $e->getMessage();
-			$type    = 'error';
-		}
+        try {
+            $model->deleteAll($user);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            $type    = 'error';
+        }
 
-		// Redirect
+        // Redirect
 		// phpcs:ignore
 		$url       = Route::_('index.php?option=com_users&task=methods.display&user_id=' . $userId, false);
-		$returnURL = $this->input->getBase64('returnurl');
+        $returnURL = $this->input->getBase64('returnurl');
 
-		if (!empty($returnURL))
-		{
-			$url = base64_decode($returnURL);
-		}
+        if (!empty($returnURL)) {
+            $url = base64_decode($returnURL);
+        }
 
-		$this->setRedirect($url, $message, $type);
-	}
+        $this->setRedirect($url, $message, $type);
+    }
 
-	/**
-	 * List all available Two Factor Authentication Methods available and guide the user to setting them up
-	 *
-	 * @param   bool   $cachable     Can this view be cached
-	 * @param   array  $urlparams    An array of safe url parameters and their variable types, for valid values see
-	 *                               {@link JFilterInput::clean()}.
-	 *
-	 * @return  void
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function display($cachable = false, $urlparams = []): void
-	{
-		$this->assertLoggedInUser();
+    /**
+     * List all available Two Factor Authentication Methods available and guide the user to setting them up
+     *
+     * @param   bool   $cachable     Can this view be cached
+     * @param   array  $urlparams    An array of safe url parameters and their variable types, for valid values see
+     *                               {@link JFilterInput::clean()}.
+     *
+     * @return  void
+     * @since   __DEPLOY_VERSION__
+     */
+    public function display($cachable = false, $urlparams = []): void
+    {
+        $this->assertLoggedInUser();
 
-		// Make sure I am allowed to edit the specified user
-		$userId  = $this->input->getInt('user_id', null);
-		$user    = ($userId === null)
-			? $this->app->getIdentity()
-			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-		$user    = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
+        // Make sure I am allowed to edit the specified user
+        $userId  = $this->input->getInt('user_id', null);
+        $user    = ($userId === null)
+            ? $this->app->getIdentity()
+            : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+        $user    = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
 
-		if (!TfaHelper::canEditUser($user))
-		{
-			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
+        if (!TfaHelper::canEditUser($user)) {
+            throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
 
-		$returnURL  = $this->input->getBase64('returnurl');
-		$viewLayout = $this->input->get('layout', 'default', 'string');
-		$view       = $this->getView('Methods', 'html');
-		$view->setLayout($viewLayout);
-		$view->returnURL = $returnURL;
-		$view->user      = $user;
+        $returnURL  = $this->input->getBase64('returnurl');
+        $viewLayout = $this->input->get('layout', 'default', 'string');
+        $view       = $this->getView('Methods', 'html');
+        $view->setLayout($viewLayout);
+        $view->returnURL = $returnURL;
+        $view->user      = $user;
 
-		$backupCodesModel = $this->getModel('Backupcodes');
-		$view->setModel($backupCodesModel, false);
+        $backupCodesModel = $this->getModel('Backupcodes');
+        $view->setModel($backupCodesModel, false);
 
-		parent::display($cachable, $urlparams);
-	}
+        parent::display($cachable, $urlparams);
+    }
 
-	/**
-	 * Disable Two Factor Authentication for the current user
-	 *
-	 * @param   bool   $cachable     Can this view be cached
-	 * @param   array  $urlparams    An array of safe url parameters and their variable types, for valid values see
-	 *                               {@link JFilterInput::clean()}.
-	 *
-	 * @return  void
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function doNotShowThisAgain($cachable = false, $urlparams = []): void
-	{
-		$this->assertLoggedInUser();
+    /**
+     * Disable Two Factor Authentication for the current user
+     *
+     * @param   bool   $cachable     Can this view be cached
+     * @param   array  $urlparams    An array of safe url parameters and their variable types, for valid values see
+     *                               {@link JFilterInput::clean()}.
+     *
+     * @return  void
+     * @since   __DEPLOY_VERSION__
+     */
+    public function doNotShowThisAgain($cachable = false, $urlparams = []): void
+    {
+        $this->assertLoggedInUser();
 
-		$this->checkToken($this->input->getMethod());
+        $this->checkToken($this->input->getMethod());
 
-		// Make sure I am allowed to edit the specified user
-		$userId  = $this->input->getInt('user_id', null);
-		$user    = ($userId === null)
-			? $this->app->getIdentity()
-			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-		$user    = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
+        // Make sure I am allowed to edit the specified user
+        $userId  = $this->input->getInt('user_id', null);
+        $user    = ($userId === null)
+            ? $this->app->getIdentity()
+            : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+        $user    = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
 
-		if (!TfaHelper::canEditUser($user))
-		{
-			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
+        if (!TfaHelper::canEditUser($user)) {
+            throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
 
-		$this->app->triggerEvent(
-			'onComUsersControllerMethodsBeforeDoNotShowThisAgain',
-			new GenericEvent('onComUsersControllerMethodsBeforeDoNotShowThisAgain', [$user])
-		);
+        $this->app->triggerEvent(
+            'onComUsersControllerMethodsBeforeDoNotShowThisAgain',
+            new GenericEvent('onComUsersControllerMethodsBeforeDoNotShowThisAgain', [$user])
+        );
 
-		/** @var MethodsModel $model */
-		$model = $this->getModel('Methods');
-		$model->setFlag($user, true);
+        /** @var MethodsModel $model */
+        $model = $this->getModel('Methods');
+        $model->setFlag($user, true);
 
-		// Redirect
-		$url       = Uri::base();
-		$returnURL = $this->input->getBase64('returnurl');
+        // Redirect
+        $url       = Uri::base();
+        $returnURL = $this->input->getBase64('returnurl');
 
-		if (!empty($returnURL))
-		{
-			$url = base64_decode($returnURL);
-		}
+        if (!empty($returnURL)) {
+            $url = base64_decode($returnURL);
+        }
 
-		$this->setRedirect($url);
-	}
+        $this->setRedirect($url);
+    }
 
-	/**
-	 * Assert that there is a user currently logged in
-	 *
-	 * @return  void
-	 * @since   __DEPLOY_VERSION__
-	 */
-	private function assertLoggedInUser(): void
-	{
-		$user = $this->app->getIdentity()
-			?: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
+    /**
+     * Assert that there is a user currently logged in
+     *
+     * @return  void
+     * @since   __DEPLOY_VERSION__
+     */
+    private function assertLoggedInUser(): void
+    {
+        $user = $this->app->getIdentity()
+            ?: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
 
-		if ($user->guest)
-		{
-			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
-	}
+        if ($user->guest) {
+            throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+    }
 }

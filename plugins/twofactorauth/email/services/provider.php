@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Twofactorauth.email
@@ -17,25 +18,25 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Twofactorauth\Email\Extension\Email;
 
 return new class implements ServiceProviderInterface {
-	/**
-	 * Registers the service provider with a DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  void
-	 *
-	 * @since __DEPLOY_VERSION__
-	 */
-	public function register(Container $container)
-	{
-		$container->set(
-			PluginInterface::class,
-			function (Container $container) {
-				$config  = (array) PluginHelper::getPlugin('twofactorauth', 'email');
-				$subject = $container->get(DispatcherInterface::class);
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  void
+     *
+     * @since __DEPLOY_VERSION__
+     */
+    public function register(Container $container)
+    {
+        $container->set(
+            PluginInterface::class,
+            function (Container $container) {
+                $config  = (array) PluginHelper::getPlugin('twofactorauth', 'email');
+                $subject = $container->get(DispatcherInterface::class);
 
-				return new Email($subject, $config);
-			}
-		);
-	}
+                return new Email($subject, $config);
+            }
+        );
+    }
 };
