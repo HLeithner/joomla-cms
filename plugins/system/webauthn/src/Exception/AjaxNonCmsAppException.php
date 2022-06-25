@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.Webauthn
@@ -8,9 +9,6 @@
  */
 
 namespace Joomla\Plugin\System\Webauthn\Exception;
-
-// Protect from unauthorized access
-\defined('_JEXEC') or die();
 
 use RuntimeException;
 

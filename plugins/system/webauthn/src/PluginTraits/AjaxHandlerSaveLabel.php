@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.Webauthn
@@ -8,9 +9,6 @@
  */
 
 namespace Joomla\Plugin\System\Webauthn\PluginTraits;
-
-// Protect from unauthorized access
-\defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
@@ -26,72 +24,62 @@ use Joomla\Plugin\System\Webauthn\CredentialRepository;
  */
 trait AjaxHandlerSaveLabel
 {
-	/**
-	 * Handle the callback to rename an authenticator
-	 *
-	 * @return  boolean
-	 *
-	 * @throws  Exception
-	 *
-	 * @since   4.0.0
-	 */
-	public function onAjaxWebauthnSavelabel(): bool
-	{
-		// Initialize objects
-		/** @var CMSApplication $app */
-		$app        = Factory::getApplication();
-		$input      = $app->input;
-		$repository = new CredentialRepository;
+    /**
+     * Handle the callback to rename an authenticator
+     *
+     * @return  boolean
+     *
+     * @throws  Exception
+     *
+     * @since   4.0.0
+     */
+    public function onAjaxWebauthnSavelabel(): bool
+    {
+        // Initialize objects
+        /** @var CMSApplication $app */
+        $app        = Factory::getApplication();
+        $input      = $app->input;
+        $repository = new CredentialRepository();
 
-		// Retrieve data from the request
-		$credentialId = $input->getBase64('credential_id', '');
-		$newLabel     = $input->getString('new_label', '');
+        // Retrieve data from the request
+        $credentialId = $input->getBase64('credential_id', '');
+        $newLabel     = $input->getString('new_label', '');
 
-		// Is this a valid credential?
-		if (empty($credentialId))
-		{
-			return false;
-		}
+        // Is this a valid credential?
+        if (empty($credentialId)) {
+            return false;
+        }
 
-		$credentialId = base64_decode($credentialId);
+        $credentialId = base64_decode($credentialId);
 
-		if (empty($credentialId) || !$repository->has($credentialId))
-		{
-			return false;
-		}
+        if (empty($credentialId) || !$repository->has($credentialId)) {
+            return false;
+        }
 
-		// Make sure I am editing my own key
-		try
-		{
-			$credentialHandle = $repository->getUserHandleFor($credentialId);
-			$myHandle         = $repository->getHandleFromUserId($app->getIdentity()->id);
-		}
-		catch (Exception $e)
-		{
-			return false;
-		}
+        // Make sure I am editing my own key
+        try {
+            $credentialHandle = $repository->getUserHandleFor($credentialId);
+            $myHandle         = $repository->getHandleFromUserId($app->getIdentity()->id);
+        } catch (Exception $e) {
+            return false;
+        }
 
-		if ($credentialHandle !== $myHandle)
-		{
-			return false;
-		}
+        if ($credentialHandle !== $myHandle) {
+            return false;
+        }
 
-		// Make sure the new label is not empty
-		if (empty($newLabel))
-		{
-			return false;
-		}
+        // Make sure the new label is not empty
+        if (empty($newLabel)) {
+            return false;
+        }
 
-		// Save the new label
-		try
-		{
-			$repository->setLabel($credentialId, $newLabel);
-		}
-		catch (Exception $e)
-		{
-			return false;
-		}
+        // Save the new label
+        try {
+            $repository->setLabel($credentialId, $newLabel);
+        } catch (Exception $e) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 }
