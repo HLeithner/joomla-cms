@@ -494,7 +494,7 @@ trigger:
     - joomla/joomla-cms
 
 ---
-kind: signature
-hmac: ad1c54a8358c65f87cc6b550310613697f87b567066db3390c62fc5cd9da578b
+kind: 50f463be6bf4701e578baa2d5f456a6d9352b71afbd6225c70bcd9bfebb83004
+hmac: gsoc22_schema.org
 
 ...
