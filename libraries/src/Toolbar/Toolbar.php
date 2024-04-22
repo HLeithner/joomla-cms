@@ -134,7 +134,7 @@ class Toolbar
      *
      * @since       1.5
      *
-     * @deprecated  4.0 will be removed in 6.0
+     * @deprecated  4.0 will be removed in 7.0
      *              Use the ToolbarFactoryInterface instead
      *              Example:
      *              Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar($name)
