@@ -14,6 +14,7 @@ use Joomla\CMS\Extension\PluginWithSubscriberInterface;
 use Joomla\CMS\Factory;
 use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -230,9 +231,16 @@ abstract class PluginHelper
 
         $plugins[$hash] = true;
 
-        $plugin = Factory::getApplication()->bootPlugin($plugin->name, $plugin->type);
+        $container = Factory::getContainer();
 
-        if ($dispatcher && $plugin instanceof DispatcherAwareInterface && !$plugin instanceof PluginWithSubscriberInterface) {
+        if ($dispatcher) {
+            $container = $container->createChild()->set(DispatcherInterface::class, $dispatcher);
+        }
+
+        $plugin = Factory::getApplication()->bootPlugin($plugin->name, $plugin->type, $container);
+
+        // @deprecated From 7.0 we will no longer inject the $dispatcher at this point, if needed it needs to be injected in the service provider.
+        if ($dispatcher && $plugin instanceof DispatcherAwareInterface) {
             $plugin->setDispatcher($dispatcher);
         }
 
@@ -241,9 +249,10 @@ abstract class PluginHelper
         }
 
         // @TODO: From 7.0 it should use $dispatcher->addSubscriber($plugin) only, and check only for SubscriberInterface.
-        if ($plugin instanceof PluginWithSubscriberInterface) {
+        if ($plugin instanceof SubscriberInterface) {
             $dispatcher->addSubscriber($plugin);
         } else {
+            // @deprecated From 7.0 the SubscriberInterface will be required
             $plugin->registerListeners();
         }
     }

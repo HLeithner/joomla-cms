@@ -18,6 +18,7 @@ use Joomla\DI\Container;
 use Joomla\DI\Exception\ContainerNotFoundException;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
+use Psr\Container\ContainerInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -39,7 +40,7 @@ trait ExtensionManagerTrait
      *
      * @since   4.0.0
      */
-    public function bootComponent($component): ComponentInterface
+    public function bootComponent($component, ContainerInterface $container = null): ComponentInterface
     {
         // Normalize the component name
         $component = strtolower($component);
@@ -48,7 +49,7 @@ trait ExtensionManagerTrait
         // Path to look for services
         $path = JPATH_ADMINISTRATOR . '/components/com_' . $component;
 
-        return $this->loadExtension(ComponentInterface::class, $component, $path);
+        return $this->loadExtension(ComponentInterface::class, $component, $path, $container);
     }
 
     /**
@@ -61,7 +62,7 @@ trait ExtensionManagerTrait
      *
      * @since   4.0.0
      */
-    public function bootModule($module, $applicationName): ModuleInterface
+    public function bootModule($module, $applicationName, ContainerInterface $container = null): ModuleInterface
     {
         // Normalize the module name
         $module = strtolower($module);
@@ -74,7 +75,7 @@ trait ExtensionManagerTrait
             $path = JPATH_ADMINISTRATOR . '/modules/mod_' . $module;
         }
 
-        return $this->loadExtension(ModuleInterface::class, $module, $path);
+        return $this->loadExtension(ModuleInterface::class, $module, $path, $container);
     }
 
     /**
@@ -87,7 +88,7 @@ trait ExtensionManagerTrait
      *
      * @since   4.0.0
      */
-    public function bootPlugin($plugin, $type): PluginInterface
+    public function bootPlugin($plugin, $type, ContainerInterface $container = null): PluginInterface
     {
         // Normalize the plugin name
         $plugin = strtolower($plugin);
@@ -96,7 +97,7 @@ trait ExtensionManagerTrait
         // Path to look for services
         $path = JPATH_SITE . '/plugins/' . $type . '/' . $plugin;
 
-        return $this->loadExtension(PluginInterface::class, $plugin . ':' . $type, $path);
+        return $this->loadExtension(PluginInterface::class, $plugin . ':' . $type, $path, $container);
     }
 
     /**
@@ -110,7 +111,7 @@ trait ExtensionManagerTrait
      *
      * @since   4.0.0
      */
-    private function loadExtension($type, $extensionName, $extensionPath)
+    private function loadExtension($type, $extensionName, $extensionPath, ContainerInterface $container = null)
     {
         // Check if the extension is already loaded
         if (!empty(ExtensionHelper::$extensions[$type][$extensionName])) {
@@ -118,7 +119,7 @@ trait ExtensionManagerTrait
         }
 
         // The container to get the services from
-        $container = $this->getContainer()->createChild();
+        $container = ($container ?: $this->getContainer())->createChild();
 
         $container->get(DispatcherInterface::class)->dispatch(
             'onBeforeExtensionBoot',
