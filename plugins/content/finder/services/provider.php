@@ -33,11 +33,12 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $plugin     = new Finder(
-                    $container->get(DispatcherInterface::class),
+                $plugin = new Finder(
                     (array) PluginHelper::getPlugin('content', 'finder')
                 );
-                $plugin->setApplication(Factory::getApplication());
+
+                $plugin->setDispatcher($container->get(DispatcherInterface::class))
+                    ->setApplication(Factory::getApplication());
 
                 return $plugin;
             }
